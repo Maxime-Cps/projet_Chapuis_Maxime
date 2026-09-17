@@ -43,25 +43,13 @@ form.addEventListener("submit", function (event) {
 });
 
 function showRecap() {
-    const recapContent = document.getElementById("recapContent");
-    recapContent.innerHTML = "";
-
-    form.querySelectorAll(".inputBlock").forEach(function (block) {
-        const input = block.querySelector("input");
-
-        // Le mot de passe ne doit pas apparaître dans le récapitulatif
-        if (input.type === "password") {
-            return;
-        }
-
-        const line = document.createElement("p");
-        const label = document.createElement("strong");
-        label.textContent = block.querySelector("label").textContent + " ";
-        line.appendChild(label);
-        // textContent et non innerHTML : la saisie ne doit pas être interprétée comme du HTML
-        line.appendChild(document.createTextNode(input.value.trim()));
-        recapContent.appendChild(line);
-    });
+    document.getElementById("recapLogin").textContent = document.getElementById("inputText").value;
+    document.getElementById("recapName").textContent = document.getElementById("inputName").value;
+    document.getElementById("recapLastname").textContent = document.getElementById("inputLastname").value;
+    document.getElementById("recapAddress").textContent = document.getElementById("inputAddress").value;
+    document.getElementById("recapEmail").textContent = document.getElementById("inputEmail").value;
+    document.getElementById("recapPhone").textContent = document.getElementById("inputPhone").value;
+    document.getElementById("recapBirthdate").textContent = document.getElementById("inputBirthdate").value;
 
     form.hidden = true;
     document.getElementById("recap").hidden = false;
