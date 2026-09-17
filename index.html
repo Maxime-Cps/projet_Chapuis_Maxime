@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TP01</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+<form id="form" novalidate>
+
+<div class="inputBlock">
+    <label for="inputText">Login :</label>
+    <input type="text" id="inputText" placeholder="Entrer le login ici">
+</div>
+
+<div class="inputBlock">
+    <label for="inputPassword">Mot de passe :</label>
+    <input type="password" id="inputPassword" placeholder="Entrer le mot de passe ici">
+</div>
+
+<div class="inputBlock">
+    <label for="inputConfirm">Confirmer Mot de passe :</label>
+    <input type="password" id="inputConfirm" placeholder="Confirmer le mot de passe ici">
+</div>
+
+<div class="inputBlock">
+    <label for="inputName">Nom :</label>
+    <input type="text" id="inputName" placeholder="Entrer le nom ici">
+</div>
+
+<div class="inputBlock">
+    <label for="inputLastname">Prénom :</label>
+    <input type="text" id="inputLastname" placeholder="Entrer le prénom ici">
+</div>
+
+<div class="inputBlock">
+    <label for="inputAddress">Adresse :</label>
+    <input type="text" id="inputAddress" placeholder="Entrer l'adresse ici">
+</div>
+
+<div class="inputBlock">
+    <label for="inputEmail">Email :</label>
+    <input type="email" id="inputEmail" placeholder="Entrer l'email ici">
+</div>
+
+<div class="inputBlock">
+    <label for="inputPhone">Numéro de téléphone :</label>
+    <input type="tel" id="inputPhone" placeholder="Entrer le numéro de téléphone ici">
+</div>
+
+<div class="inputBlock">
+    <label for="inputBirthdate">Date de naissance :</label>
+    <input type="date" id="inputBirthdate">
+</div>
+
+<p id="message"></p>
+
+<input type="submit" value="Envoyer">
+
+</form>
+
+<div id="recap" class="recap" hidden>
+    <h2>Récapitulatif</h2>
+    <p>Login : <span id="recapLogin"></span></p>
+    <p>Nom : <span id="recapName"></span></p>
+    <p>Prénom : <span id="recapLastname"></span></p>
+    <p>Adresse : <span id="recapAddress"></span></p>
+    <p>Email : <span id="recapEmail"></span></p>
+    <p>Téléphone : <span id="recapPhone"></span></p>
+    <p>Date de naissance : <span id="recapBirthdate"></span></p>
+</div>
+
+</body>
+</html>
