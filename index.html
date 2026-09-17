@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <title>TP01</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
+
+<form id="form" novalidate>
 
 <div class="inputBlock">
     <label for="inputText">Login :</label>
@@ -52,7 +55,16 @@
     <input type="date" id="inputBirthdate">
 </div>
 
+<p id="message"></p>
+
 <input type="submit" value="Envoyer">
+
+</form>
+
+<div id="recap" class="recap" hidden>
+    <h2>Récapitulatif</h2>
+    <div id="recapContent"></div>
+</div>
 
 </body>
 </html>
