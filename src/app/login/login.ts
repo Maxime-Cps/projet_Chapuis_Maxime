@@ -1,14 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-
-interface User {
-  login: string;
-  password: string;
-  confirmPassword: string;
-  lastName: string;
-  firstName: string;
-  email: string;
-}
+import {User} from '../../interfaces/User';
 
 @Component({
   imports: [FormsModule],
@@ -26,7 +18,6 @@ export class Login {
     email: '',
   };
 
-  /** True when the confirmation differs from the password. */
   protected passwordsDiffer(): boolean {
     return this.user.password !== this.user.confirmPassword;
   }
