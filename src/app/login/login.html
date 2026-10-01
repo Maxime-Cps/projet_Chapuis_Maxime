@@ -1,0 +1,141 @@
+<main class="page">
+  <header class="intro">
+    <h1>Créer un compte</h1>
+    <p>Tous les champs sont obligatoires.</p>
+  </header>
+
+  <div class="plane">
+    <form #form="ngForm" (ngSubmit)="submit(form)" novalidate>
+      <fieldset>
+        <legend>Identifiants</legend>
+
+        <div class="field">
+          <label for="login">Login</label>
+          <input
+            id="login"
+            name="login"
+            type="text"
+            autocomplete="username"
+            [(ngModel)]="user.login"
+            #loginModel="ngModel"
+            [attr.aria-invalid]="loginModel.touched && loginModel.invalid"
+            aria-describedby="login-hint"
+            required
+          />
+          @if (loginModel.touched && loginModel.invalid) {
+            <p id="login-hint" class="hint error">Choisissez un login.</p>
+          }
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="password">Mot de passe</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              [(ngModel)]="user.password"
+              #passwordModel="ngModel"
+              [attr.aria-invalid]="passwordModel.touched && passwordModel.invalid"
+              aria-describedby="password-hint"
+              required
+            />
+            @if (passwordModel.touched && passwordModel.invalid) {
+              <p id="password-hint" class="hint error">Choisissez un mot de passe.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="confirmPassword">Confirmation</label>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              [(ngModel)]="user.confirmPassword"
+              #confirmModel="ngModel"
+              [attr.aria-invalid]="
+                confirmModel.touched && (confirmModel.invalid || passwordsDiffer())
+              "
+              aria-describedby="confirm-hint"
+              required
+            />
+            @if (confirmModel.touched && confirmModel.invalid) {
+              <p id="confirm-hint" class="hint error">Saisissez à nouveau le mot de passe.</p>
+            } @else if (confirmModel.touched && passwordsDiffer()) {
+              <p id="confirm-hint" class="hint error">Les deux mots de passe sont différents.</p>
+            } @else if (confirmModel.dirty && !passwordsDiffer()) {
+              <p id="confirm-hint" class="hint ok">Les mots de passe correspondent.</p>
+            }
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Coordonnées</legend>
+
+        <div class="row">
+          <div class="field">
+            <label for="lastName">Nom</label>
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              autocomplete="family-name"
+              [(ngModel)]="user.lastName"
+              #lastNameModel="ngModel"
+              [attr.aria-invalid]="lastNameModel.touched && lastNameModel.invalid"
+              aria-describedby="lastName-hint"
+              required
+            />
+            @if (lastNameModel.touched && lastNameModel.invalid) {
+              <p id="lastName-hint" class="hint error">Indiquez votre nom.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="firstName">Prénom</label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              autocomplete="given-name"
+              [(ngModel)]="user.firstName"
+              #firstNameModel="ngModel"
+              [attr.aria-invalid]="firstNameModel.touched && firstNameModel.invalid"
+              aria-describedby="firstName-hint"
+              required
+            />
+            @if (firstNameModel.touched && firstNameModel.invalid) {
+              <p id="firstName-hint" class="hint error">Indiquez votre prénom.</p>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            [(ngModel)]="user.email"
+            #emailModel="ngModel"
+            [attr.aria-invalid]="emailModel.touched && emailModel.invalid"
+            aria-describedby="email-hint"
+            required
+            email
+          />
+          @if (emailModel.touched && emailModel.invalid) {
+            <p id="email-hint" class="hint error">
+              Saisissez une adresse du type nom&#64;domaine.fr.
+            </p>
+          }
+        </div>
+      </fieldset>
+
+      <button type="submit">Créer mon compte</button>
+    </form>
+  </div>
+</main>
