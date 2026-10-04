@@ -1,9 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {Login} from './login/login';
+import {PollutionForm} from './pollution-form/pollution-form';
 
 @Component({
-  imports: [RouterOutlet, Login],
+  imports: [PollutionForm],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',

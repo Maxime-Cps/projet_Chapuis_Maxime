@@ -1,0 +1,134 @@
+<main class="page">
+  <header class="intro">
+    @if (!isSubmitted) {
+      <h1>Signaler une pollution</h1>
+      <p>Tous les champs sont obligatoires, sauf l'image.</p>
+    } @else {
+      <h1>Signalement enregistré</h1>
+      <p>Voici le récapitulatif de votre déclaration.</p>
+    }
+  </header>
+
+  <div class="plane">
+    @if (!isSubmitted) {
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <fieldset>
+          <legend>La pollution</legend>
+
+          <div class="row">
+            <div class="field">
+              <label for="pollutionLabel">Titre</label>
+              <input
+                id="pollutionLabel"
+                formControlName="label"
+                type="text"
+              />
+            </div>
+
+            <div class="field">
+              <label for="pollutionType">Type</label>
+              <select
+                id="pollutionType"
+                formControlName="type"
+              >
+                <option [ngValue]="null" disabled>Choisir un type</option>
+                @for (pType of pollutionTypeList; track pType.id) {
+                  <option [ngValue]="pType">{{ pType.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="pollutionDescription">Description</label>
+            <textarea
+              id="pollutionDescription"
+              formControlName="description"
+              rows="4"
+            ></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Observation</legend>
+
+          <div class="row">
+            <div class="field">
+              <label for="pollutionDate">Date de l'observation</label>
+              <input
+                id="pollutionDate"
+                formControlName="date"
+                type="datetime-local"
+              />
+            </div>
+
+            <div class="field">
+              <label for="pollutionPlace">Lieu</label>
+              <input
+                id="pollutionPlace"
+                formControlName="place"
+                type="text"
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="pollutionLatitude">Latitude</label>
+              <input
+                id="pollutionLatitude"
+                formControlName="latitude"
+                type="number"
+                step="any"
+                aria-describedby="latitude-hint"
+              />
+              @if (this.form.controls["latitude"].touched &&
+              this.form.controls["latitude"].errors?.['min']) {
+                <small id="latitude-hint" class="hint error" role="alert">La latitude doit être comprise entre -90 et 90.</small>
+              } @else if (this.form.controls["latitude"].touched &&
+              this.form.controls["latitude"].errors?.['max']) {
+                <small id="latitude-hint" class="hint error" role="alert">La latitude doit être comprise entre -90 et 90.</small>
+              }
+            </div>
+
+            <div class="field">
+              <label for="pollutionLongitude">Longitude</label>
+              <input
+                id="pollutionLongitude"
+                formControlName="longitude"
+                type="number"
+                step="any"
+                aria-describedby="longitude-hint"
+              />
+              @if (this.form.controls["longitude"].touched &&
+              this.form.controls["longitude"].errors?.['min']) {
+                <small id="longitude-hint" class="hint error" role="alert">La longitude doit être comprise entre -180 et 180.</small>
+              } @else if (this.form.controls["longitude"].touched &&
+              this.form.controls["longitude"].errors?.['max']) {
+                <small id="longitude-hint" class="hint error" role="alert">La longitude doit être comprise entre -180 et 180.</small>
+              }
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Illustration</legend>
+
+          <div class="field">
+            <label for="pollutionImage">URL de l'image (facultatif)</label>
+            <input
+              id="pollutionImage"
+              formControlName="image"
+              type="url"
+              placeholder="https://"
+            />
+          </div>
+        </fieldset>
+
+        <button type="submit">Valider</button>
+      </form>
+    } @else {
+      <app-pollution-recap [data]="form.getRawValue()" (back)="isSubmitted = false"></app-pollution-recap>
+    }
+  </div>
+</main>
