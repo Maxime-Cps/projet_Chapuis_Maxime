@@ -1,15 +1,14 @@
 import { Component } from '@angular/core';
 import {PollutionType} from '../../interfaces/PollutionType';
 import {
-  AbstractControl,
   FormControl,
   FormGroup,
   NgForm,
   ReactiveFormsModule,
-  ValidationErrors,
   Validators
 } from '@angular/forms';
 import {PollutionRecap} from '../pollution-recap/pollution-recap';
+import {notInFuture} from '../../validators/date.validators';
 
 @Component({
   imports: [
@@ -37,7 +36,7 @@ export class PollutionForm {
     label: new FormControl("", [Validators.required]),
     type: new FormControl<PollutionType | null>(null, [Validators.required]),
     description: new FormControl("", [Validators.required]),
-    date: new FormControl("", [Validators.required]),
+    date: new FormControl("", [Validators.required, notInFuture]),
     place: new FormControl("", [Validators.required]),
     latitude: new FormControl<number | null>(null, [Validators.required, Validators.min(-90), Validators.max(90)]),
     longitude: new FormControl<number | null>(null, [Validators.required, Validators.min(-180), Validators.max(180)]),
@@ -45,20 +44,11 @@ export class PollutionForm {
   })
 
   onSubmit() {
-    if (this.notInFuture(this.form.controls["date"].value)) {
-
-    }
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
     this.isSubmitted = true;
-  }
-
-  notInFuture(control: AbstractControl): ValidationErrors | null
-  {
-    return new Date(control.value) > new Date() ? { future: true } :
-      null;
   }
 
 }

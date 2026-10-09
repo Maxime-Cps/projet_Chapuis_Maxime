@@ -59,7 +59,12 @@
                 id="pollutionDate"
                 formControlName="date"
                 type="datetime-local"
+                aria-describedby="date-hint"
               />
+              @if (this.form.controls["date"].touched &&
+              this.form.controls["date"].errors?.['future']) {
+                <small id="date-hint" class="hint error" role="alert">La date ne peut pas être dans le futur.</small>
+              }
             </div>
 
             <div class="field">
