@@ -1,0 +1,47 @@
+<dl class="recap">
+  <div class="item wide">
+    <dt>Titre de la pollution</dt>
+    <dd>{{ data?.label }}</dd>
+  </div>
+
+  <div class="item">
+    <dt>Type de pollution</dt>
+    <dd>{{ data?.type?.name }}</dd>
+  </div>
+
+  <div class="item">
+    <dt>Date de l'observation</dt>
+    <dd class="num">{{ data?.date | date: 'dd/MM/yyyy, HH:mm' }}</dd>
+  </div>
+
+  <div class="item wide">
+    <dt>Description</dt>
+    <dd class="prose">{{ data?.description }}</dd>
+  </div>
+
+  <div class="item wide">
+    <dt>Lieu</dt>
+    <dd>{{ data?.place }}</dd>
+  </div>
+
+  <div class="item">
+    <dt>Latitude</dt>
+    <dd class="num">{{ data?.latitude }}</dd>
+  </div>
+
+  <div class="item">
+    <dt>Longitude</dt>
+    <dd class="num">{{ data?.longitude }}</dd>
+  </div>
+
+  <div class="item wide">
+    <dt>Image</dt>
+    @if (data?.image) {
+      <dd><img [src]="data?.image" alt="Photo de la pollution signalée" /></dd>
+    } @else {
+      <dd class="empty">Aucune image fournie</dd>
+    }
+  </div>
+</dl>
+
+<button type="button" class="btn-return" (click)="Return()">Retour</button>

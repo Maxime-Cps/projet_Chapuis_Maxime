@@ -1,0 +1,91 @@
+$narrow: 34rem;
+
+.recap {
+  display: grid;
+  gap: 1.75rem 1.25rem;
+  max-width: 40rem;
+  margin: 0;
+
+  @media (min-width: $narrow) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.item {
+  display: grid;
+  gap: 0.25rem;
+  align-content: start;
+  min-width: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+dt {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--slate);
+}
+
+dd {
+  margin: 0;
+  font-size: 1.125rem;
+  overflow-wrap: anywhere;
+}
+
+.prose {
+  font-size: 1rem;
+  max-width: 65ch;
+  white-space: pre-line;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  color: var(--slate);
+  font-style: italic;
+}
+
+img {
+  display: block;
+  width: 100%;
+  max-height: 24rem;
+  object-fit: cover;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  background: var(--mist);
+}
+
+.btn-return {
+  margin-top: 2.5rem;
+  padding: 0.875rem 1.75rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--cobalt);
+  background: transparent;
+  border: 1px solid var(--cobalt);
+  border-radius: 999px;
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--cobalt) 10%, transparent);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--cobalt);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: $narrow) {
+    width: 100%;
+  }
+}
