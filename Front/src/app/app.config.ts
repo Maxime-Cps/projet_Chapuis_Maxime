@@ -8,7 +8,7 @@ import { mockApiInterceptor } from '../services/mock-api.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withInterceptors(environment.MOCK_API ? [mockApiInterceptor] : [])),
+    provideHttpClient(withInterceptors([mockApiInterceptor])),
     provideRouter(routes)
   ]
 };
