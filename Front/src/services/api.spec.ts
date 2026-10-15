@@ -2,7 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Api } from './api';
-import { SignUpRequest, User } from '../interfaces/SignUpRequest';
+import { SignUpRequest } from '../interfaces/SignUpRequest';
+import { User } from '../interfaces/User';
 
 describe('Api', () => {
   let service: Api;

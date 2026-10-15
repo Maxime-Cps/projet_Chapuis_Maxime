@@ -2,7 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Api } from '../../services/api';
-import { SignUpRequest, User } from '../../interfaces/SignUpRequest';
+import { SignUpRequest } from '../../interfaces/SignUpRequest';
+import { User } from '../../interfaces/User';
 
 const PASSWORD_MIN_LENGTH = 8;
 

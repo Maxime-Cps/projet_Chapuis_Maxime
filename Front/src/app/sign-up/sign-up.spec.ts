@@ -3,7 +3,7 @@ import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { SignUp } from './sign-up';
 import { Api } from '../../services/api';
-import { User } from '../../interfaces/SignUpRequest';
+import { User } from '../../interfaces/User';
 
 describe('SignUp', () => {
   const USER: User = { id: 7, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' };
