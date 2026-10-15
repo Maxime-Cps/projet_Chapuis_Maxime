@@ -1,139 +1,128 @@
 <main class="page">
-  <header class="intro">
-    @if (!isSubmitted) {
-      <h1>Signaler une pollution</h1>
-      <p>Tous les champs sont obligatoires, sauf l'image.</p>
-    } @else {
-      <h1>Signalement enregistré</h1>
-      <p>Voici le récapitulatif de votre déclaration.</p>
-    }
-  </header>
+  <app-map-backdrop />
 
-  <div class="plane">
+  <div class="marker" aria-hidden="true">
+    <span class="marker-dot"></span>
+    <span class="marker-label">
+      <span class="marker-place">{{ form.value.place || "Lieu de l'observation" }}</span>
+      <span class="marker-coords">{{ form.value.latitude ?? '—' }} · {{ form.value.longitude ?? '—' }}</span>
+    </span>
+  </div>
+
+  <section class="panel">
     @if (!isSubmitted) {
+      <header class="panel-head">
+        <span class="eyebrow">Nouveau signalement</span>
+        <h1>Signaler une pollution</h1>
+        <p class="lead">Les champs marqués <span class="req">*</span> sont obligatoires.</p>
+      </header>
+
       <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-        <fieldset>
-          <legend>La pollution</legend>
+        <fieldset class="group">
+          <legend class="visually-hidden">Position</legend>
 
           <div class="row">
             <div class="field">
-              <label for="pollutionLabel">Titre</label>
-              <input
-                id="pollutionLabel"
-                formControlName="label"
-                type="text"
-              />
-            </div>
-
-            <div class="field">
-              <label for="pollutionType">Type</label>
-              <select
-                id="pollutionType"
-                formControlName="type"
-              >
-                <option [ngValue]="null" disabled>Choisir un type</option>
-                @for (pType of pollutionTypeList; track pType.id) {
-                  <option [ngValue]="pType">{{ pType.name }}</option>
-                }
-              </select>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="pollutionDescription">Description</label>
-            <textarea
-              id="pollutionDescription"
-              formControlName="description"
-              rows="4"
-            ></textarea>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Observation</legend>
-
-          <div class="row">
-            <div class="field">
-              <label for="pollutionDate">Date de l'observation</label>
-              <input
-                id="pollutionDate"
-                formControlName="date"
-                type="datetime-local"
-                aria-describedby="date-hint"
-              />
-              @if (this.form.controls["date"].touched &&
-              this.form.controls["date"].errors?.['future']) {
-                <small id="date-hint" class="hint error" role="alert">La date ne peut pas être dans le futur.</small>
-              }
-            </div>
-
-            <div class="field">
-              <label for="pollutionPlace">Lieu</label>
-              <input
-                id="pollutionPlace"
-                formControlName="place"
-                type="text"
-              />
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label for="pollutionLatitude">Latitude</label>
+              <label for="pollutionLatitude">Latitude <span class="req" aria-hidden="true">*</span></label>
               <input
                 id="pollutionLatitude"
+                class="mono"
                 formControlName="latitude"
+                aria-required="true"
                 type="number"
                 step="any"
                 aria-describedby="latitude-hint"
               />
-              @if (this.form.controls["latitude"].touched &&
-              this.form.controls["latitude"].errors?.['min']) {
-                <small id="latitude-hint" class="hint error" role="alert">La latitude doit être comprise entre -90 et 90.</small>
-              } @else if (this.form.controls["latitude"].touched &&
-              this.form.controls["latitude"].errors?.['max']) {
-                <small id="latitude-hint" class="hint error" role="alert">La latitude doit être comprise entre -90 et 90.</small>
+              @if (form.controls['latitude'].touched &&
+              (form.controls['latitude'].errors?.['min'] || form.controls['latitude'].errors?.['max'])) {
+                <small id="latitude-hint" class="hint error" role="alert">Entre -90 et 90.</small>
               }
             </div>
 
             <div class="field">
-              <label for="pollutionLongitude">Longitude</label>
+              <label for="pollutionLongitude">Longitude <span class="req" aria-hidden="true">*</span></label>
               <input
                 id="pollutionLongitude"
+                class="mono"
                 formControlName="longitude"
+                aria-required="true"
                 type="number"
                 step="any"
                 aria-describedby="longitude-hint"
               />
-              @if (this.form.controls["longitude"].touched &&
-              this.form.controls["longitude"].errors?.['min']) {
-                <small id="longitude-hint" class="hint error" role="alert">La longitude doit être comprise entre -180 et 180.</small>
-              } @else if (this.form.controls["longitude"].touched &&
-              this.form.controls["longitude"].errors?.['max']) {
-                <small id="longitude-hint" class="hint error" role="alert">La longitude doit être comprise entre -180 et 180.</small>
+              @if (form.controls['longitude'].touched &&
+              (form.controls['longitude'].errors?.['min'] || form.controls['longitude'].errors?.['max'])) {
+                <small id="longitude-hint" class="hint error" role="alert">Entre -180 et 180.</small>
               }
             </div>
           </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Illustration</legend>
 
           <div class="field">
-            <label for="pollutionImage">URL de l'image (facultatif)</label>
-            <input
-              id="pollutionImage"
-              formControlName="image"
-              type="url"
-              placeholder="https://"
-            />
+            <label for="pollutionPlace">Lieu <span class="req" aria-hidden="true">*</span></label>
+            <input id="pollutionPlace" formControlName="place" type="text" aria-required="true" />
           </div>
         </fieldset>
 
-        <button type="submit">Valider</button>
+        <fieldset class="group">
+          <legend class="label">Type <span class="req" aria-hidden="true">*</span></legend>
+          <div class="chips">
+            @for (pType of pollutionTypeList; track pType.id) {
+              <label class="chip">
+                <input
+                  class="visually-hidden"
+                  type="radio"
+                  name="type"
+                  formControlName="type"
+                  [value]="pType"
+                />
+                {{ pType.name }}
+              </label>
+            }
+          </div>
+          @if (form.controls['type'].touched && form.controls['type'].errors?.['required']) {
+            <small id="type-hint" class="hint error" role="alert">Choisissez un type.</small>
+          }
+        </fieldset>
+
+        <div class="field">
+          <label for="pollutionLabel">Titre <span class="req" aria-hidden="true">*</span></label>
+          <input id="pollutionLabel" formControlName="label" type="text" aria-required="true" />
+        </div>
+
+        <div class="field">
+          <label for="pollutionDescription">Description <span class="req" aria-hidden="true">*</span></label>
+          <textarea id="pollutionDescription" formControlName="description" rows="3" aria-required="true"></textarea>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="pollutionDate">Observée le <span class="req" aria-hidden="true">*</span></label>
+            <input
+              id="pollutionDate"
+              formControlName="date"
+              aria-required="true"
+              type="datetime-local"
+              aria-describedby="date-hint"
+            />
+            @if (form.controls['date'].touched && form.controls['date'].errors?.['future']) {
+              <small id="date-hint" class="hint error" role="alert">La date ne peut pas être dans le futur.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="pollutionImage">Image (facultatif)</label>
+            <input id="pollutionImage" formControlName="image" type="url" placeholder="https://" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Envoyer le signalement</button>
       </form>
     } @else {
-      <app-pollution-recap [data]="form.getRawValue()" (back)="isSubmitted = false"></app-pollution-recap>
+      <app-pollution-recap
+        [data]="form.getRawValue()"
+        (back)="isSubmitted = false"
+        (restart)="restart()"
+      />
     }
-  </div>
+  </section>
 </main>

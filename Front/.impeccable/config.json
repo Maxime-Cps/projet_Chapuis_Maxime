@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/app/pollution-recap/pollution-recap.html"
+        ],
+        "createdAt": "2026-10-03T16:31:59.133Z",
+        "reason": "Claude: src bound via [src] and guarded by @if (data?.image)"
+      }
+    ]
+  }
+}

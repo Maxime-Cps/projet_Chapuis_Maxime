@@ -3,17 +3,18 @@ import {PollutionType} from '../../interfaces/PollutionType';
 import {
   FormControl,
   FormGroup,
-  NgForm,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
 import {PollutionRecap} from '../pollution-recap/pollution-recap';
 import {notInFuture} from '../../validators/date.validators';
+import {MapBackdrop} from '../map-backdrop/map-backdrop';
 
 @Component({
   imports: [
     ReactiveFormsModule,
-    PollutionRecap
+    PollutionRecap,
+    MapBackdrop
   ],
   selector: 'app-pollution-form',
   styleUrl: './pollution-form.scss',
@@ -49,6 +50,12 @@ export class PollutionForm {
       return;
     }
     this.isSubmitted = true;
+  }
+
+  /** Clears the form to start a new report. */
+  restart() {
+    this.form.reset();
+    this.isSubmitted = false;
   }
 
 }
