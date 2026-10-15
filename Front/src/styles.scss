@@ -1,0 +1,52 @@
+// Palette « Nuit · Braise »
+:root {
+  // Carte
+  --bg: #14110e;
+  --land: #1a1612;
+  --park: #1c2119;
+  --water: #1d2b31;
+  --road: #3a3128;
+  --street: #2a241e;
+  --building: #221d18;
+
+  // Interface
+  --panel: #1c1814;
+  --border: #382f27;
+  --field: #14110e;
+  --text: #f3ede5;
+  --text-soft: #d9d0c4;
+  --muted: #b6aa99;
+  --accent: #ffb547;
+  --on-accent: #1a1206;
+  --error: #ff8a7a;
+
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

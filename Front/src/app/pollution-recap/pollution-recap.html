@@ -1,0 +1,62 @@
+<header class="head">
+  <span class="badge" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12.5l4.5 4.5L19 7.5" />
+    </svg>
+  </span>
+  <div>
+    <h1>Signalement enregistré</h1>
+    <p>Voici le récapitulatif de votre déclaration.</p>
+  </div>
+</header>
+
+@if (data?.image) {
+  <img class="photo" [src]="data?.image" alt="Photo de la pollution signalée" />
+} @else {
+  <div class="photo photo-empty">Aucune image fournie</div>
+}
+
+<div class="summary">
+  <span class="type">{{ data?.type?.name }}</span>
+  <h2>{{ data?.label }}</h2>
+  <p class="prose">{{ data?.description }}</p>
+</div>
+
+<dl class="facts">
+  <div class="fact">
+    <dt>Observée le</dt>
+    <dd class="mono">{{ data?.date | date: 'dd/MM/yyyy · HH:mm' }}</dd>
+  </div>
+  <div class="fact">
+    <dt>Lieu</dt>
+    <dd>{{ data?.place }}</dd>
+  </div>
+  <div class="fact fact-coords">
+    <dt>Coordonnées</dt>
+    <dd>
+      <span class="mono">{{ data?.latitude }}, {{ data?.longitude }}</span>
+      <button
+        type="button"
+        class="icon-btn"
+        (click)="copyCoordinates()"
+        [attr.aria-label]="copied() ? 'Coordonnées copiées' : 'Copier les coordonnées'"
+      >
+        @if (copied()) {
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12.5l4.5 4.5L19 7.5" />
+          </svg>
+        } @else {
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="11" height="11" rx="2" />
+            <path d="M5 15V5a2 2 0 0 1 2-2h8" />
+          </svg>
+        }
+      </button>
+    </dd>
+  </div>
+</dl>
+
+<div class="actions">
+  <button type="button" class="btn-secondary" (click)="Return()">Modifier</button>
+  <button type="button" class="btn-primary" (click)="restart.emit()">Nouveau signalement</button>
+</div>
