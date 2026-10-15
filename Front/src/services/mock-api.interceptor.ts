@@ -6,13 +6,8 @@ import { User } from '../interfaces/User';
 
 const LATENCY_MS = 500;
 
-/** Email the mock treats as already registered, to demo the conflict error. */
-export const TAKEN_EMAIL = 'taken@example.com';
+export const ALREADY_TAKEN_EMAIL = 'maxime@test.com';
 
-/**
- * Fakes backend responses until the real API exists.
- * Enabled via `environment.MOCK_API`; unknown requests pass through.
- */
 export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.method !== 'POST' || req.url !== Api.SIGN_UP_URL) {
     return next(req);
@@ -20,7 +15,7 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
 
   const { password, ...profile } = req.body as SignUpRequest;
 
-  if (profile.email === TAKEN_EMAIL) {
+  if (profile.email === ALREADY_TAKEN_EMAIL) {
     const conflict = new HttpErrorResponse({ status: HttpStatusCode.Conflict, url: req.url });
     return throwError(() => conflict).pipe(delay(LATENCY_MS));
   }

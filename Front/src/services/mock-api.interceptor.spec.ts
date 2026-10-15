@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpStatusCode, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Api } from './api';
-import { mockApiInterceptor, TAKEN_EMAIL } from './mock-api.interceptor';
+import { mockApiInterceptor, ALREADY_TAKEN_EMAIL } from './mock-api.interceptor';
 import { SignUpRequest } from '../interfaces/SignUpRequest';
 
 describe('mockApiInterceptor', () => {
@@ -35,7 +35,7 @@ describe('mockApiInterceptor', () => {
   });
 
   it('should reject the taken email with a conflict', async () => {
-    const result = firstValueFrom(api.signUp({ ...REQUEST, email: TAKEN_EMAIL }));
+    const result = firstValueFrom(api.signUp({ ...REQUEST, email: ALREADY_TAKEN_EMAIL }));
     const assertion = expect(result).rejects.toMatchObject({ status: HttpStatusCode.Conflict });
     await vi.runAllTimersAsync();
 
