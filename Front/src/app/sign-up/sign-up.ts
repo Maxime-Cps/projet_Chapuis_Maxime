@@ -56,7 +56,6 @@ export class SignUp {
     });
   }
 
-  /** Clears the result to register another user. */
   restart() {
     this.form.reset();
     this.user.set(null);

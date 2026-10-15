@@ -4,8 +4,6 @@ import { Api } from './api';
 import { SignUpRequest } from '../interfaces/SignUpRequest';
 import { User } from '../interfaces/User';
 
-const LATENCY_MS = 500;
-
 export const ALREADY_TAKEN_EMAIL = 'maxime@test.com';
 
 export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
@@ -17,10 +15,10 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
 
   if (profile.email === ALREADY_TAKEN_EMAIL) {
     const conflict = new HttpErrorResponse({ status: HttpStatusCode.Conflict, url: req.url });
-    return throwError(() => conflict).pipe(delay(LATENCY_MS));
+    return throwError(() => conflict);
   }
 
   const user: User = { id: Date.now(), ...profile };
   const created = new HttpResponse({ status: HttpStatusCode.Created, body: user });
-  return of(created).pipe(delay(LATENCY_MS));
+  return of(created);
 };
