@@ -1,3 +1,6 @@
+@use 'styles/components';
+@use 'styles/forms';
+
 // Palette « Nuit · Braise »
 :root {
   // Carte
@@ -51,21 +54,3 @@ body {
   border: 0;
 }
 
-// Lien de retour vers la liste
-.back {
-  align-self: flex-start;
-  font-size: 0.875rem;
-  color: var(--muted);
-  text-decoration: none;
-
-  &:hover {
-    color: var(--accent);
-  }
-}
-
-// Rangée de liens en tête de panneau
-.panel-links {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}

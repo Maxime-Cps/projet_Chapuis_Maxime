@@ -5,7 +5,7 @@
         <span class="eyebrow">Signalements</span>
         <h1>Pollutions signalées</h1>
       </div>
-      <a class="btn-primary" routerLink="/">Signaler</a>
+      <a class="btn-primary" [routerLink]="links.report">Signaler</a>
     </header>
 
     <form class="filters" [formGroup]="filterForm" role="search">
@@ -48,14 +48,14 @@
     <ul class="list">
       @for (pollution of visible(); track pollution.id) {
         <li class="item">
-          <a class="item-link" [routerLink]="['/pollutions', pollution.id]">
+          <a class="item-link" [routerLink]="links.detail(pollution.id)">
             <span class="type">{{ pollution.type.name }}</span>
             <span class="item-label">{{ pollution.label }}</span>
             <span class="item-meta">{{ pollution.place }} · {{ pollution.date | date: 'dd/MM/yyyy' }}</span>
           </a>
           <button
             type="button"
-            class="icon-btn"
+            class="icon-btn icon-btn-danger"
             (click)="remove(pollution)"
             [attr.aria-label]="'Supprimer ' + pollution.label"
           >

@@ -1,6 +1,6 @@
 <main class="page">
   <section class="panel">
-    <a class="back" routerLink="/">← Signaler une pollution</a>
+    <a class="back" [routerLink]="links.report">← Signaler une pollution</a>
 
     @if (user(); as user) {
       <header class="panel-head">

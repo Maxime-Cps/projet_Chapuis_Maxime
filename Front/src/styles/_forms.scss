@@ -1,0 +1,95 @@
+// Formulaires et champs
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+
+  @media (max-width: 22rem) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+label,
+.label {
+  padding: 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.field :is(input, select, textarea) {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--text);
+  background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color 120ms ease;
+
+  &::placeholder {
+    color: color-mix(in srgb, var(--muted) 70%, transparent);
+  }
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--muted) 50%, var(--border));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  &.ng-touched.ng-invalid {
+    border-color: var(--error);
+  }
+}
+
+.field .mono {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.field textarea {
+  min-height: 5.5rem;
+  padding: 0.625rem 0.75rem;
+  resize: vertical;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  animation: hint-in 160ms ease-out;
+}
+
+@keyframes hint-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint {
+    animation: none;
+  }
+
+  .field :is(input, select, textarea) {
+    transition: none;
+  }
+}

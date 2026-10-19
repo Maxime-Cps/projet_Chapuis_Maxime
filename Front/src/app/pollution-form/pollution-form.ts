@@ -13,10 +13,8 @@ import {MapBackdrop} from '../map-backdrop/map-backdrop';
 import {PollutionApi} from '../../services/pollution-api';
 import {Pollution} from '../../interfaces/Pollution';
 import {FormFields} from '../../interfaces/FormFields';
-
-const LOAD_ERROR = 'Impossible de charger le signalement.';
-const SAVE_ERROR = "L'enregistrement a échoué. Réessayez.";
-const NEW_REPORT_ROUTE = '/';
+import {ID_PARAM, LINKS} from '../../constants/routes';
+import {POLLUTION_ERRORS} from '../../constants/messages';
 
 @Component({
   imports: [
@@ -37,6 +35,7 @@ export class PollutionForm {
   /** Id of the edited pollution, null until the report is first saved. */
   private id: number | null = null;
 
+  readonly links = LINKS;
   readonly isSubmitted = signal(false);
   readonly error = signal<string | null>(null);
 
@@ -54,7 +53,7 @@ export class PollutionForm {
   })
 
   constructor() {
-    const param = this.route.snapshot.paramMap.get('id');
+    const param = this.route.snapshot.paramMap.get(ID_PARAM);
     if (param === null) {
       return;
     }
@@ -62,7 +61,7 @@ export class PollutionForm {
     this.id = Number(param);
     this.api.getById(this.id).subscribe({
       next: (pollution) => this.fill(pollution),
-      error: () => this.error.set(LOAD_ERROR),
+      error: () => this.error.set(POLLUTION_ERRORS.load),
     });
   }
 
@@ -81,7 +80,7 @@ export class PollutionForm {
         this.id = pollution.id;
         this.isSubmitted.set(true);
       },
-      error: () => this.error.set(SAVE_ERROR),
+      error: () => this.error.set(POLLUTION_ERRORS.save),
     });
   }
 
@@ -91,8 +90,8 @@ export class PollutionForm {
     this.id = null;
     this.isSubmitted.set(false);
 
-    if (this.route.snapshot.paramMap.has('id')) {
-      this.router.navigateByUrl(NEW_REPORT_ROUTE);
+    if (this.route.snapshot.paramMap.has(ID_PARAM)) {
+      this.router.navigateByUrl(LINKS.report);
     }
   }
 

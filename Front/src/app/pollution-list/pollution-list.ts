@@ -8,9 +8,8 @@ import { PollutionApi } from '../../services/pollution-api';
 import { Pollution } from '../../interfaces/Pollution';
 import { POLLUTION_TYPES } from '../../interfaces/PollutionType';
 import { matches, PollutionFilter } from './pollution-filter';
-
-const LOAD_ERROR = 'Impossible de charger les signalements.';
-const DELETE_ERROR = 'La suppression a échoué. Réessayez.';
+import { LINKS } from '../../constants/routes';
+import { deleteConfirmation, POLLUTION_ERRORS } from '../../constants/messages';
 
 @Component({
   imports: [ReactiveFormsModule, RouterLink, DatePipe],
@@ -21,6 +20,7 @@ const DELETE_ERROR = 'La suppression a échoué. Réessayez.';
 export class PollutionList {
   private readonly api = inject(PollutionApi);
 
+  readonly links = LINKS;
   readonly types = POLLUTION_TYPES;
   readonly pollutions = signal<Pollution[]>([]);
   readonly error = signal<string | null>(null);
@@ -42,19 +42,19 @@ export class PollutionList {
   constructor() {
     this.api.getAll().subscribe({
       next: (pollutions) => this.pollutions.set(pollutions),
-      error: () => this.error.set(LOAD_ERROR),
+      error: () => this.error.set(POLLUTION_ERRORS.listLoad),
     });
   }
 
   remove(pollution: Pollution) {
-    if (!confirm(`Supprimer « ${pollution.label} » ?`)) {
+    if (!confirm(deleteConfirmation(pollution.label))) {
       return;
     }
 
     this.error.set(null);
     this.api.delete(pollution.id).subscribe({
       next: () => this.pollutions.update((list) => list.filter((p) => p.id !== pollution.id)),
-      error: () => this.error.set(DELETE_ERROR),
+      error: () => this.error.set(POLLUTION_ERRORS.delete),
     });
   }
 

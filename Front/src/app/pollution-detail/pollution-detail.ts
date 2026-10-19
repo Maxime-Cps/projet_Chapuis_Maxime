@@ -5,11 +5,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PollutionApi } from '../../services/pollution-api';
 import { Pollution } from '../../interfaces/Pollution';
 import { MapBackdrop } from '../map-backdrop/map-backdrop';
-
-const NOT_FOUND_ERROR = 'Signalement introuvable.';
-const LOAD_ERROR = 'Impossible de charger le signalement.';
-const DELETE_ERROR = 'La suppression a échoué. Réessayez.';
-const LIST_ROUTE = '/pollutions';
+import { ID_PARAM, LINKS } from '../../constants/routes';
+import { deleteConfirmation, POLLUTION_ERRORS } from '../../constants/messages';
 
 @Component({
   imports: [DatePipe, RouterLink, MapBackdrop],
@@ -21,30 +18,31 @@ export class PollutionDetail {
   private readonly api = inject(PollutionApi);
   private readonly router = inject(Router);
 
-  readonly listRoute = LIST_ROUTE;
+  readonly links = LINKS;
   readonly pollution = signal<Pollution | null>(null);
   readonly error = signal<string | null>(null);
 
   constructor() {
-    const id = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
+    const id = Number(inject(ActivatedRoute).snapshot.paramMap.get(ID_PARAM));
 
     this.api.getById(id).subscribe({
       next: (pollution) => this.pollution.set(pollution),
       error: (err: HttpErrorResponse) => {
-        this.error.set(err.status === HttpStatusCode.NotFound ? NOT_FOUND_ERROR : LOAD_ERROR);
+        const notFound = err.status === HttpStatusCode.NotFound;
+        this.error.set(notFound ? POLLUTION_ERRORS.notFound : POLLUTION_ERRORS.load);
       },
     });
   }
 
   remove(pollution: Pollution) {
-    if (!confirm(`Supprimer « ${pollution.label} » ?`)) {
+    if (!confirm(deleteConfirmation(pollution.label))) {
       return;
     }
 
     this.error.set(null);
     this.api.delete(pollution.id).subscribe({
-      next: () => this.router.navigateByUrl(LIST_ROUTE),
-      error: () => this.error.set(DELETE_ERROR),
+      next: () => this.router.navigateByUrl(LINKS.list),
+      error: () => this.error.set(POLLUTION_ERRORS.delete),
     });
   }
 }

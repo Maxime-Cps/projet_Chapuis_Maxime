@@ -11,8 +11,8 @@
 
   <section class="panel">
     <nav class="panel-links">
-      <a class="back" routerLink="/pollutions">← Tous les signalements</a>
-      <a id="sign-up-link" class="back" routerLink="/signup">Créer un compte</a>
+      <a class="back" [routerLink]="links.list">← Tous les signalements</a>
+      <a id="sign-up-link" class="back" [routerLink]="links.signUp">Créer un compte</a>
     </nav>
 
     @if (!isSubmitted()) {

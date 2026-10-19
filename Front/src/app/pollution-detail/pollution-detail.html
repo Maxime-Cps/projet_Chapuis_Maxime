@@ -2,7 +2,7 @@
   <app-map-backdrop />
 
   <section class="panel">
-    <a class="back" [routerLink]="listRoute">← Tous les signalements</a>
+    <a class="back" [routerLink]="links.list">← Tous les signalements</a>
 
     @if (error(); as error) {
       <p id="detail-error" class="error" role="alert">{{ error }}</p>
@@ -36,7 +36,7 @@
 
       <div class="actions">
         <button type="button" class="btn-danger" (click)="remove(pollution)">Supprimer</button>
-        <a class="btn-primary" [routerLink]="['/pollutions', pollution.id, 'edit']">Modifier</a>
+        <a class="btn-primary" [routerLink]="links.edit(pollution.id)">Modifier</a>
       </div>
     }
   </section>
