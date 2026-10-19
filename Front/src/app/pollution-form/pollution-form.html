@@ -10,7 +10,10 @@
   </div>
 
   <section class="panel">
-    <a class="back" routerLink="/pollutions">← Tous les signalements</a>
+    <nav class="panel-links">
+      <a class="back" routerLink="/pollutions">← Tous les signalements</a>
+      <a id="sign-up-link" class="back" routerLink="/signup">Créer un compte</a>
+    </nav>
 
     @if (!isSubmitted()) {
       <header class="panel-head">

@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { PollutionList } from './pollution-list';
+import { PollutionForm } from '../pollution-form/pollution-form';
+import { routes } from '../app.routes';
 import { PollutionApi } from '../../services/pollution-api';
 import { Pollution } from '../../interfaces/Pollution';
 import { POLLUTION_TYPES } from '../../interfaces/PollutionType';
@@ -27,7 +29,7 @@ describe('PollutionList', () => {
 
     await TestBed.configureTestingModule({
       imports: [PollutionList],
-      providers: [provideRouter([]), { provide: PollutionApi, useValue: api }],
+      providers: [provideRouter(routes), { provide: PollutionApi, useValue: api }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PollutionList);
@@ -42,6 +44,15 @@ describe('PollutionList', () => {
 
   it('should display every pollution', () => {
     expect(labels()).toEqual(['Bouteilles', 'Fumée']);
+  });
+
+  it('should link the report button to the pollution form', async () => {
+    const router = TestBed.inject(Router);
+    const link = fixture.nativeElement.querySelector('.panel-head a') as HTMLAnchorElement;
+
+    await router.navigateByUrl(link.getAttribute('href')!);
+
+    expect(router.routerState.snapshot.root.firstChild?.component).toBe(PollutionForm);
   });
 
   it('should display only pollutions matching the filter', async () => {

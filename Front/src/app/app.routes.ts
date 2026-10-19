@@ -10,4 +10,5 @@ export const routes: Routes = [
   { path: 'pollutions/:id', component: PollutionDetail },
   { path: 'pollutions/:id/edit', component: PollutionForm },
   { path: 'signup', component: SignUp },
+  { path: '**', redirectTo: '' },
 ];

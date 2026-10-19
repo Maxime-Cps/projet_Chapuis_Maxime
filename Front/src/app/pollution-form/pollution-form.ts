@@ -16,7 +16,7 @@ import {FormFields} from '../../interfaces/FormFields';
 
 const LOAD_ERROR = 'Impossible de charger le signalement.';
 const SAVE_ERROR = "L'enregistrement a échoué. Réessayez.";
-const NEW_REPORT_ROUTE = '/pollutionForm';
+const NEW_REPORT_ROUTE = '/';
 
 @Component({
   imports: [

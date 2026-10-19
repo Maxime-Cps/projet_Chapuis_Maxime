@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Api } from '../../services/api';
 import { SignUpRequest } from '../../interfaces/SignUpRequest';
 import { User } from '../../interfaces/User';
@@ -8,7 +9,7 @@ import { User } from '../../interfaces/User';
 const PASSWORD_MIN_LENGTH = 8;
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   selector: 'app-sign-up',
   styleUrl: './sign-up.scss',
   templateUrl: './sign-up.html',
