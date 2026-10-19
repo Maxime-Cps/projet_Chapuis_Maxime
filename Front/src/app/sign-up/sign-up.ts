@@ -17,7 +17,6 @@ export class SignUp {
   private readonly api = inject(Api);
 
   readonly passwordMinLength = PASSWORD_MIN_LENGTH;
-  readonly isLoading = signal(false);
   readonly user = signal<User | null>(null);
   readonly error = signal<string | null>(null);
 
@@ -40,18 +39,15 @@ export class SignUp {
       return;
     }
 
-    this.isLoading.set(true);
     this.error.set(null);
 
     const request: SignUpRequest = this.form.getRawValue();
     this.api.signUp(request).subscribe({
       next: (user) => {
         this.user.set(user);
-        this.isLoading.set(false);
       },
       error: (err: HttpErrorResponse) => {
         this.error.set(errorMessage(err));
-        this.isLoading.set(false);
       },
     });
   }
