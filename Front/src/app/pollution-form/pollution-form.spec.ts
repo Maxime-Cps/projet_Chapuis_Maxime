@@ -1,5 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 import { PollutionForm } from './pollution-form';
+import { mockPollutionInterceptor } from '../../services/mock-pollution.interceptor';
 
 describe('PollutionForm', () => {
   let component: PollutionForm;
@@ -8,6 +11,7 @@ describe('PollutionForm', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PollutionForm],
+      providers: [provideHttpClient(withInterceptors([mockPollutionInterceptor])), provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PollutionForm);

@@ -1,0 +1,141 @@
+.page {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  min-height: 100dvh;
+  padding: 1.5rem;
+  overflow: hidden;
+  background: var(--bg);
+
+  @media (max-width: 48rem) {
+    padding: 8rem 0 0;
+  }
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: min(26.25rem, 100%);
+  padding: 1.75rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+
+  @media (max-width: 48rem) {
+    padding: 1.5rem 1rem 2rem;
+    border-width: 1px 0 0;
+    border-radius: 18px 18px 0 0;
+  }
+}
+
+.error {
+  margin: 0;
+  color: var(--error);
+}
+
+.photo {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.625rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+}
+
+.type {
+  align-self: flex-start;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--on-accent);
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.prose {
+  margin: 0;
+  color: var(--text-soft);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.facts {
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+
+.fact {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+
+  dt {
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  dd {
+    margin: 0;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 0.625rem;
+}
+
+.btn-primary,
+.btn-danger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 10px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+}
+
+.btn-primary {
+  color: var(--on-accent);
+  background: var(--accent);
+  border: 0;
+}
+
+.btn-danger {
+  color: var(--error);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--error) 50%, var(--border));
+}

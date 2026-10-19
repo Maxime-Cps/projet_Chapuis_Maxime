@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import {PollutionType} from '../../interfaces/PollutionType';
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import {POLLUTION_TYPES, PollutionType} from '../../interfaces/PollutionType';
 import {
   FormControl,
   FormGroup,
@@ -9,29 +10,37 @@ import {
 import {PollutionRecap} from '../pollution-recap/pollution-recap';
 import {notInFuture} from '../../validators/date.validators';
 import {MapBackdrop} from '../map-backdrop/map-backdrop';
+import {PollutionApi} from '../../services/pollution-api';
+import {Pollution} from '../../interfaces/Pollution';
+import {FormFields} from '../../interfaces/FormFields';
+
+const LOAD_ERROR = 'Impossible de charger le signalement.';
+const SAVE_ERROR = "L'enregistrement a échoué. Réessayez.";
+const NEW_REPORT_ROUTE = '/pollutionForm';
 
 @Component({
   imports: [
     ReactiveFormsModule,
     PollutionRecap,
-    MapBackdrop
+    MapBackdrop,
+    RouterLink
   ],
   selector: 'app-pollution-form',
   styleUrl: './pollution-form.scss',
   templateUrl: './pollution-form.html',
 })
 export class PollutionForm {
+  private readonly api = inject(PollutionApi);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
-  isSubmitted = false;
+  /** Id of the edited pollution, null until the report is first saved. */
+  private id: number | null = null;
 
-  readonly pollutionTypeList: PollutionType[] = [
-    { id : 0, name : "Plastique" },
-    { id : 1, name : "Chimique" },
-    { id : 2, name :  "Dépôt sauvage" },
-    { id : 3, name : "Eau" },
-    { id : 4, name : "Air" },
-    { id : 5, name : "Autre" },
-  ];
+  readonly isSubmitted = signal(false);
+  readonly error = signal<string | null>(null);
+
+  readonly pollutionTypeList = POLLUTION_TYPES;
 
   readonly form : FormGroup = new FormGroup({
     label: new FormControl("", [Validators.required]),
@@ -44,18 +53,54 @@ export class PollutionForm {
     image: new FormControl(""),
   })
 
+  constructor() {
+    const param = this.route.snapshot.paramMap.get('id');
+    if (param === null) {
+      return;
+    }
+
+    this.id = Number(param);
+    this.api.getById(this.id).subscribe({
+      next: (pollution) => this.fill(pollution),
+      error: () => this.error.set(LOAD_ERROR),
+    });
+  }
+
   onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    this.isSubmitted = true;
+
+    this.error.set(null);
+
+    const fields: FormFields = this.form.getRawValue();
+    const save = this.id === null ? this.api.create(fields) : this.api.update({ ...fields, id: this.id });
+    save.subscribe({
+      next: (pollution) => {
+        this.id = pollution.id;
+        this.isSubmitted.set(true);
+      },
+      error: () => this.error.set(SAVE_ERROR),
+    });
   }
 
   /** Clears the form to start a new report. */
   restart() {
     this.form.reset();
-    this.isSubmitted = false;
+    this.id = null;
+    this.isSubmitted.set(false);
+
+    if (this.route.snapshot.paramMap.has('id')) {
+      this.router.navigateByUrl(NEW_REPORT_ROUTE);
+    }
+  }
+
+  /** Loads an existing pollution into the form, matching its type to a radio option. */
+  private fill(pollution: Pollution) {
+    const { id, ...fields } = pollution;
+    const type = POLLUTION_TYPES.find((t) => t.id === pollution.type.id) ?? null;
+    this.form.patchValue({ ...fields, type });
   }
 
 }
