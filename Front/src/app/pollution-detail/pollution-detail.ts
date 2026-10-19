@@ -1,0 +1,48 @@
+import { Component, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { PollutionApi } from '../../services/pollution-api';
+import { Pollution } from '../../interfaces/Pollution';
+import { MapBackdrop } from '../map-backdrop/map-backdrop';
+import { ID_PARAM, LINKS } from '../../constants/routes';
+import { deleteConfirmation, POLLUTION_ERRORS } from '../../constants/messages';
+
+@Component({
+  imports: [DatePipe, RouterLink, MapBackdrop],
+  selector: 'app-pollution-detail',
+  styleUrl: './pollution-detail.scss',
+  templateUrl: './pollution-detail.html',
+})
+export class PollutionDetail {
+  private readonly api = inject(PollutionApi);
+  private readonly router = inject(Router);
+
+  readonly links = LINKS;
+  readonly pollution = signal<Pollution | null>(null);
+  readonly error = signal<string | null>(null);
+
+  constructor() {
+    const id = Number(inject(ActivatedRoute).snapshot.paramMap.get(ID_PARAM));
+
+    this.api.getById(id).subscribe({
+      next: (pollution) => this.pollution.set(pollution),
+      error: (err: HttpErrorResponse) => {
+        const notFound = err.status === HttpStatusCode.NotFound;
+        this.error.set(notFound ? POLLUTION_ERRORS.notFound : POLLUTION_ERRORS.load);
+      },
+    });
+  }
+
+  remove(pollution: Pollution) {
+    if (!confirm(deleteConfirmation(pollution.label))) {
+      return;
+    }
+
+    this.error.set(null);
+    this.api.delete(pollution.id).subscribe({
+      next: () => this.router.navigateByUrl(LINKS.list),
+      error: () => this.error.set(POLLUTION_ERRORS.delete),
+    });
+  }
+}

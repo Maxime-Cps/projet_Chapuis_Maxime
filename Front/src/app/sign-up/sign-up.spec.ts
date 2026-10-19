@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { SignUp } from './sign-up';
 import { Api } from '../../services/api';
@@ -17,7 +18,7 @@ describe('SignUp', () => {
 
     await TestBed.configureTestingModule({
       imports: [SignUp],
-      providers: [{ provide: Api, useValue: api }],
+      providers: [provideRouter([]), { provide: Api, useValue: api }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SignUp);

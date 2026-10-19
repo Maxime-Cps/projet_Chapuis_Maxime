@@ -1,14 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Api } from '../../services/api';
 import { SignUpRequest } from '../../interfaces/SignUpRequest';
 import { User } from '../../interfaces/User';
+import { LINKS } from '../../constants/routes';
+import { SIGN_UP_ERRORS } from '../../constants/messages';
 
 const PASSWORD_MIN_LENGTH = 8;
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   selector: 'app-sign-up',
   styleUrl: './sign-up.scss',
   templateUrl: './sign-up.html',
@@ -16,6 +19,7 @@ const PASSWORD_MIN_LENGTH = 8;
 export class SignUp {
   private readonly api = inject(Api);
 
+  readonly links = LINKS;
   readonly passwordMinLength = PASSWORD_MIN_LENGTH;
   readonly user = signal<User | null>(null);
   readonly error = signal<string | null>(null);
@@ -60,12 +64,12 @@ export class SignUp {
 
 function errorMessage(err: HttpErrorResponse): string {
   if (err.status === HttpStatusCode.Conflict) {
-    return 'Cet email est déjà utilisé.';
+    return SIGN_UP_ERRORS.emailTaken;
   }
 
   if (err.status === 0) {
-    return 'Serveur injoignable. Réessayez plus tard.';
+    return SIGN_UP_ERRORS.unreachable;
   }
 
-  return "L'inscription a échoué. Réessayez.";
+  return SIGN_UP_ERRORS.generic;
 }

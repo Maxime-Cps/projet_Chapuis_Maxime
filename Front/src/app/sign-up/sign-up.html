@@ -1,5 +1,7 @@
 <main class="page">
   <section class="panel">
+    <a class="back" [routerLink]="links.report">← Signaler une pollution</a>
+
     @if (user(); as user) {
       <header class="panel-head">
         <span class="eyebrow">Compte créé</span>
@@ -70,9 +72,7 @@
           <p id="sign-up-error" class="hint error" role="alert">{{ error }}</p>
         }
 
-        <button type="submit" class="btn-primary" [disabled]="isLoading()">
-          {{ isLoading() ? 'Inscription…' : "S'inscrire" }}
-        </button>
+        <button type="submit" class="btn-primary">S'inscrire</button>
       </form>
     }
   </section>

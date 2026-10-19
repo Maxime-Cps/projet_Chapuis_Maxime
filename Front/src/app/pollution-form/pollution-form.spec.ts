@@ -1,5 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideRouter, Router } from '@angular/router';
 import { PollutionForm } from './pollution-form';
+import { mockPollutionInterceptor } from '../../services/mock-pollution.interceptor';
+import { routes } from '../app.routes';
+import { SignUp } from '../sign-up/sign-up';
 
 describe('PollutionForm', () => {
   let component: PollutionForm;
@@ -8,6 +13,7 @@ describe('PollutionForm', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PollutionForm],
+      providers: [provideHttpClient(withInterceptors([mockPollutionInterceptor])), provideRouter(routes)],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PollutionForm);
@@ -17,6 +23,15 @@ describe('PollutionForm', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should link to the sign-up page', async () => {
+    const router = TestBed.inject(Router);
+    const link = fixture.nativeElement.querySelector('#sign-up-link') as HTMLAnchorElement | null;
+
+    await router.navigateByUrl(link?.getAttribute('href') ?? '');
+
+    expect(router.routerState.snapshot.root.firstChild?.component).toBe(SignUp);
   });
 
   describe('with a future observation date', () => {

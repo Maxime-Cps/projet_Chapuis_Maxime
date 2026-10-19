@@ -10,7 +10,12 @@
   </div>
 
   <section class="panel">
-    @if (!isSubmitted) {
+    <nav class="panel-links">
+      <a class="back" [routerLink]="links.list">← Tous les signalements</a>
+      <a id="sign-up-link" class="back" [routerLink]="links.signUp">Créer un compte</a>
+    </nav>
+
+    @if (!isSubmitted()) {
       <header class="panel-head">
         <span class="eyebrow">Nouveau signalement</span>
         <h1>Signaler une pollution</h1>
@@ -115,12 +120,16 @@
           </div>
         </div>
 
+        @if (error(); as error) {
+          <p id="form-error" class="hint error" role="alert">{{ error }}</p>
+        }
+
         <button type="submit" class="btn-primary">Envoyer le signalement</button>
       </form>
     } @else {
       <app-pollution-recap
         [data]="form.getRawValue()"
-        (back)="isSubmitted = false"
+        (back)="isSubmitted.set(false)"
         (restart)="restart()"
       />
     }

@@ -1,0 +1,29 @@
+const REPORT = '';
+const LIST = 'pollutions';
+const SIGN_UP = 'signup';
+const EDIT = 'edit';
+
+/** Name of the route parameter holding a pollution id. */
+export const ID_PARAM = 'id';
+
+/** Path patterns for the router configuration. */
+export const ROUTE_PATHS = {
+  report: REPORT,
+  list: LIST,
+  detail: `${LIST}/:${ID_PARAM}`,
+  edit: `${LIST}/:${ID_PARAM}/${EDIT}`,
+  signUp: SIGN_UP,
+} as const;
+
+/**
+ * Absolute URLs for links and navigation, built from the same segments as {@link ROUTE_PATHS}.
+ *
+ * @example <a [routerLink]="links.detail(3)"> → /pollutions/3
+ */
+export const LINKS = {
+  report: `/${REPORT}`,
+  list: `/${LIST}`,
+  signUp: `/${SIGN_UP}`,
+  detail: (id: number) => `/${LIST}/${id}`,
+  edit: (id: number) => `/${LIST}/${id}/${EDIT}`,
+} as const;

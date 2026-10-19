@@ -1,0 +1,43 @@
+<main class="page">
+  <app-map-backdrop />
+
+  <section class="panel">
+    <a class="back" [routerLink]="links.list">← Tous les signalements</a>
+
+    @if (error(); as error) {
+      <p id="detail-error" class="error" role="alert">{{ error }}</p>
+    }
+
+    @if (pollution(); as pollution) {
+      @if (pollution.image) {
+        <img class="photo" [src]="pollution.image" alt="Photo de la pollution signalée" />
+      }
+
+      <header class="summary">
+        <span class="type">{{ pollution.type.name }}</span>
+        <h1>{{ pollution.label }}</h1>
+        <p class="prose">{{ pollution.description }}</p>
+      </header>
+
+      <dl class="facts">
+        <div class="fact">
+          <dt>Observée le</dt>
+          <dd class="mono">{{ pollution.date | date: 'dd/MM/yyyy · HH:mm' }}</dd>
+        </div>
+        <div class="fact">
+          <dt>Lieu</dt>
+          <dd>{{ pollution.place }}</dd>
+        </div>
+        <div class="fact">
+          <dt>Coordonnées</dt>
+          <dd class="mono">{{ pollution.latitude }}, {{ pollution.longitude }}</dd>
+        </div>
+      </dl>
+
+      <div class="actions">
+        <button type="button" class="btn-danger" (click)="remove(pollution)">Supprimer</button>
+        <a class="btn-primary" [routerLink]="links.edit(pollution.id)">Modifier</a>
+      </div>
+    }
+  </section>
+</main>
