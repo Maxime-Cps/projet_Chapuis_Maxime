@@ -2,6 +2,10 @@ import { Sequelize } from "sequelize";
 import { BDD } from "../config";
 import definePollutions, { PollutionModel } from "./pollutions.model";
 
+if (!process.env.DATABASE_URL && !BDD.host) {
+  throw new Error("Missing DATABASE_URL or DB_* environment variables (see .env.example).");
+}
+
 const connectionUrl =
   process.env.DATABASE_URL ||
   `postgres://${BDD.user}:${BDD.password}@${BDD.host}/${BDD.bdname}`;
