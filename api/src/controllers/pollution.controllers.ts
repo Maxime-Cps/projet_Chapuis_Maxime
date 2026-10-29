@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import db from "../models";
-import { PollutionCreationAttributes } from "../models/pollutions.model";
+import { readPollution } from "../validators/pollution.validator";
 
 const Pollutions = db.pollutions;
 
@@ -43,36 +43,6 @@ export const getById = async (req: Request, res: Response): Promise<void> => {
     });
   }
 };
-
-const REQUIRED_TEXT_FIELDS = ["label", "description", "date", "place", "latitude", "longitude"] as const;
-
-/** Extracts the writable pollution fields from a request body, or null when invalid. */
-function readPollution(body: unknown): PollutionCreationAttributes | null {
-  if (typeof body !== "object" || body === null) {
-    return null;
-  }
-
-  const fields = body as Record<string, unknown>;
-  if (REQUIRED_TEXT_FIELDS.some((key) => typeof fields[key] !== "string")) {
-    return null;
-  }
-
-  const type = fields.type as Record<string, unknown> | undefined;
-  if (typeof type?.id !== "number" || typeof type?.name !== "string") {
-    return null;
-  }
-
-  return {
-    label: fields.label as string,
-    type: { id: type.id, name: type.name },
-    description: fields.description as string,
-    date: fields.date as string,
-    place: fields.place as string,
-    latitude: fields.latitude as string,
-    longitude: fields.longitude as string,
-    image: typeof fields.image === "string" ? fields.image : ""
-  };
-}
 
 /** Route id as a positive integer, or null when it is not one (e.g. "abc"). */
 function readId(req: Request): number | null {
