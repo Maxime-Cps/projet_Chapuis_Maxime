@@ -1,6 +1,11 @@
 import { Sequelize } from "sequelize";
 import { BDD } from "../config";
 import definePollutions, { PollutionModel } from "./pollutions.model";
+import defineUsers, { UserModel } from "./users.model";
+
+if (!process.env.DATABASE_URL && !BDD.host) {
+  throw new Error("Missing DATABASE_URL or DB_* environment variables (see .env.example).");
+}
 
 const connectionUrl =
   process.env.DATABASE_URL ||
@@ -31,12 +36,14 @@ export interface Database {
   Sequelize: typeof Sequelize;
   sequelize: Sequelize;
   pollutions: PollutionModel;
+  users: UserModel;
 }
 
 export const db: Database = {
   Sequelize,
   sequelize,
-  pollutions: definePollutions(sequelize, Sequelize)
+  pollutions: definePollutions(sequelize, Sequelize),
+  users: defineUsers(sequelize)
 };
 
 export default db;

@@ -2,3 +2,5 @@
 .idea
 API dev.run.xml
 package-lock.json
+/dist
+.env
