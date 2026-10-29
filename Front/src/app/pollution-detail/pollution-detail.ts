@@ -8,9 +8,11 @@ import { Pollution } from '../../interfaces/Pollution';
 import { MapBackdrop } from '../map-backdrop/map-backdrop';
 import { ID_PARAM, LINKS } from '../../constants/routes';
 import { deleteConfirmation, POLLUTION_ERRORS } from '../../constants/messages';
+import { Icon } from '../icon/icon';
+import { SignOut } from '../sign-out/sign-out';
 
 @Component({
-  imports: [DatePipe, RouterLink, MapBackdrop],
+  imports: [DatePipe, RouterLink, MapBackdrop, Icon, SignOut],
   selector: 'app-pollution-detail',
   styleUrl: './pollution-detail.scss',
   templateUrl: './pollution-detail.html',

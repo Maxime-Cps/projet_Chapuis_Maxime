@@ -6,19 +6,12 @@
   background: var(--bg);
 }
 
-.recap {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.5rem 1rem;
+.switch {
   margin: 0;
+  font-size: var(--text-small);
+  color: var(--muted);
 
-  dt {
-    font-size: 0.8125rem;
-    color: var(--muted);
-  }
-
-  dd {
-    margin: 0;
-    overflow-wrap: anywhere;
+  a {
+    color: var(--accent);
   }
 }

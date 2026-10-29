@@ -1,10 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { SignUp } from './sign-up';
 import { AuthApi } from '../../services/auth-api';
+import { AuthSession } from '../../services/auth-session';
 import { User } from '../../interfaces/User';
+import { routes } from '../app.routes';
 
 describe('SignUp', () => {
   const USER: User = { id: 7, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' };
@@ -14,11 +16,12 @@ describe('SignUp', () => {
   let api: { signUp: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    sessionStorage.clear();
     api = { signUp: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [SignUp],
-      providers: [provideRouter([]), { provide: AuthApi, useValue: api }],
+      providers: [provideRouter(routes), { provide: AuthApi, useValue: api }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SignUp);
@@ -52,15 +55,23 @@ describe('SignUp', () => {
     expect(button.disabled).toBe(true);
   });
 
-  it('should display the created user', async () => {
+  it('should open the pollution list once the account is created', async () => {
     api.signUp.mockReturnValue(of(USER));
     fillForm();
 
     component.onSubmit();
-    fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(fixture.nativeElement.textContent).toContain('Bienvenue, Ada');
+    expect(TestBed.inject(Router).url).toBe('/pollutions');
+  });
+
+  it('should sign the created user in', async () => {
+    api.signUp.mockReturnValue(of(USER));
+    fillForm();
+
+    component.onSubmit();
+
+    expect(TestBed.inject(AuthSession).user()).toEqual(USER);
   });
 
   it('should display an error when the email is taken', async () => {

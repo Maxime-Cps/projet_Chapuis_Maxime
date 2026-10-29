@@ -1,11 +1,12 @@
 <main class="page">
   <section class="panel">
+    <nav class="panel-links panel-links-end">
+      <app-sign-out />
+    </nav>
+
     <header class="panel-head">
-      <div>
-        <span class="eyebrow">Signalements</span>
-        <h1>Pollutions signalées</h1>
-      </div>
-      <a class="btn-primary" [routerLink]="links.report">Signaler</a>
+      <h1>Pollutions signalées</h1>
+      <a class="btn-primary" [routerLink]="links.report">Signaler une pollution</a>
     </header>
 
     <form class="filters" [formGroup]="filterForm" role="search">
@@ -19,14 +20,17 @@
         />
       </div>
 
-      <div class="field">
+      <div class="field field-type">
         <label for="filterType">Type</label>
-        <select id="filterType" formControlName="typeId">
-          <option [ngValue]="null">Tous les types</option>
-          @for (type of types; track type.id) {
-            <option [ngValue]="type.id">{{ type.name }}</option>
-          }
-        </select>
+        <div class="select">
+          <select id="filterType" formControlName="typeId">
+            <option [ngValue]="null">Tous les types</option>
+            @for (type of types; track type.id) {
+              <option [ngValue]="type.id">{{ type.name }}</option>
+            }
+          </select>
+          <app-icon name="chevron-down" />
+        </div>
       </div>
 
       <div class="field">
@@ -49,14 +53,52 @@
     @if (loading()) {
       <p id="list-loading" class="loading" role="status">Chargement des signalements…</p>
     } @else {
-      <p class="count" aria-live="polite">
-        {{ visible().length }} sur {{ pollutions().length }} signalement(s)
-      </p>
+      <div class="results-bar">
+        <p class="count" aria-live="polite">
+          {{ visible().length }} sur {{ pollutions().length }} signalement(s)
+        </p>
 
-      <ul class="list">
+        <div class="view-switch" role="group" aria-label="Affichage">
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label="Liste"
+            title="Liste"
+            [attr.aria-pressed]="view() === views.List"
+            (click)="setView(views.List)"
+          >
+            <app-icon name="list" />
+          </button>
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label="Cartes"
+            title="Cartes"
+            [attr.aria-pressed]="view() === views.Cards"
+            (click)="setView(views.Cards)"
+          >
+            <app-icon name="layout-grid" />
+          </button>
+        </div>
+      </div>
+
+      <ul class="list" [class.cards]="view() === views.Cards">
         @for (pollution of visible(); track pollution.id) {
           <li class="item">
             <a class="item-link" [routerLink]="links.detail(pollution.id)">
+              @if (view() === views.Cards) {
+                @if (pollution.image && !brokenImageIds().has(pollution.id)) {
+                  <img
+                    class="item-photo"
+                    [src]="pollution.image"
+                    alt=""
+                    loading="lazy"
+                    (error)="markImageBroken(pollution.id)"
+                  />
+                } @else {
+                  <span class="item-photo photo-empty">Aucune image</span>
+                }
+              }
               <span class="type">{{ pollution.type.name }}</span>
               <span class="item-label">{{ pollution.label }}</span>
               <span class="item-meta"
@@ -70,19 +112,7 @@
               [disabled]="deletingIds().has(pollution.id)"
               [attr.aria-label]="'Supprimer ' + pollution.label"
             >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-              </svg>
+              <app-icon name="trash-2" />
             </button>
           </li>
         } @empty {

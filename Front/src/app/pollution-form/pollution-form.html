@@ -5,22 +5,32 @@
     <span class="marker-dot"></span>
     <span class="marker-label">
       <span class="marker-place">{{ form.value.place || "Lieu de l'observation" }}</span>
-      <span class="marker-coords">{{ form.value.latitude ?? '—' }} · {{ form.value.longitude ?? '—' }}</span>
+      <span class="marker-coords">
+        @if (form.value.latitude != null && form.value.longitude != null) {
+          {{ form.value.latitude }} · {{ form.value.longitude }}
+        } @else {
+          Coordonnées à saisir
+        }
+      </span>
     </span>
   </div>
 
   <section class="panel">
     <nav class="panel-links">
-      <a class="back" [routerLink]="links.list">← Tous les signalements</a>
-      <a id="sign-up-link" class="back" [routerLink]="links.signUp">Créer un compte</a>
+      <a class="back" [routerLink]="links.list"><app-icon name="arrow-left" />Tous les signalements</a>
+      <app-sign-out />
     </nav>
 
     @if (loading()) {
       <p id="form-loading" class="loading" role="status">Chargement du signalement…</p>
     } @else if (!isSubmitted()) {
       <header class="panel-head">
-        <span class="eyebrow">Nouveau signalement</span>
-        <h1>Signaler une pollution</h1>
+        @if (editing) {
+          <h1>Modifier le signalement</h1>
+        } @else {
+          <h1>Signaler une pollution</h1>
+          <p class="lead">Indiquez où et quand vous l'avez vue. Le signalement s'ajoute à la liste.</p>
+        }
         <p class="lead">Les champs marqués <span class="req">*</span> sont obligatoires.</p>
       </header>
 
@@ -127,7 +137,13 @@
         }
 
         <button type="submit" class="btn-primary" [disabled]="saving()">
-          {{ saving() ? 'Envoi…' : 'Envoyer le signalement' }}
+          @if (saving()) {
+            Envoi…
+          } @else if (editing) {
+            Enregistrer les modifications
+          } @else {
+            Envoyer le signalement
+          }
         </button>
       </form>
     } @else {

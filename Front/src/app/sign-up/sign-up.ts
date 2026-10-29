@@ -1,11 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthApi } from '../../services/auth-api';
+import { AuthSession } from '../../services/auth-session';
 import { SignUpRequest } from '../../interfaces/SignUpRequest';
-import { User } from '../../interfaces/User';
 import { LINKS } from '../../constants/routes';
 import { SIGN_UP_ERRORS } from '../../constants/messages';
 
@@ -19,10 +19,11 @@ const PASSWORD_MIN_LENGTH = 8;
 })
 export class SignUp {
   private readonly api = inject(AuthApi);
+  private readonly session = inject(AuthSession);
+  private readonly router = inject(Router);
 
   readonly links = LINKS;
   readonly passwordMinLength = PASSWORD_MIN_LENGTH;
-  readonly user = signal<User | null>(null);
   readonly error = signal<string | null>(null);
   readonly saving = signal(false);
 
@@ -51,17 +52,13 @@ export class SignUp {
     this.saving.set(true);
     this.api.signUp(request).pipe(finalize(() => this.saving.set(false))).subscribe({
       next: (user) => {
-        this.user.set(user);
+        this.session.start(user);
+        this.router.navigateByUrl(LINKS.list);
       },
       error: (err: HttpErrorResponse) => {
         this.error.set(errorMessage(err));
       },
     });
-  }
-
-  restart() {
-    this.form.reset();
-    this.user.set(null);
   }
 }
 

@@ -14,6 +14,13 @@ export const SIGN_UP_ERRORS = {
   generic: "L'inscription a échoué. Réessayez.",
 } as const;
 
+/** User-facing error messages for login. */
+export const LOGIN_ERRORS = {
+  invalid: 'Email ou mot de passe incorrect.',
+  unreachable: 'Serveur injoignable. Réessayez plus tard.',
+  generic: 'La connexion a échoué. Réessayez.',
+} as const;
+
 /** Question asked before deleting a pollution report. */
 export function deleteConfirmation(label: string): string {
   return `Supprimer « ${label} » ?`;

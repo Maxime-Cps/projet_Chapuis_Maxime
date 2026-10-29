@@ -5,6 +5,7 @@ import { PollutionForm } from './pollution-form';
 import { mockPollutionInterceptor } from '../../services/mock-pollution.interceptor';
 import { routes } from '../app.routes';
 import { SignUp } from '../sign-up/sign-up';
+import { AuthSession } from '../../services/auth-session';
 
 describe('PollutionForm', () => {
   let component: PollutionForm;
@@ -16,6 +17,7 @@ describe('PollutionForm', () => {
       providers: [provideHttpClient(withInterceptors([mockPollutionInterceptor])), provideRouter(routes)],
     }).compileComponents();
 
+    TestBed.inject(AuthSession).start({ id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' });
     fixture = TestBed.createComponent(PollutionForm);
     component = fixture.componentInstance;
     await fixture.whenStable();
@@ -49,12 +51,14 @@ describe('PollutionForm', () => {
     expect(component.isSubmitted()).toBe(true);
   });
 
-  it('should link to the sign-up page', async () => {
+  it('should sign out and go to the sign-up page', async () => {
     const router = TestBed.inject(Router);
-    const link = fixture.nativeElement.querySelector('#sign-up-link') as HTMLAnchorElement | null;
+    const button = fixture.nativeElement.querySelector('app-sign-out button') as HTMLButtonElement;
 
-    await router.navigateByUrl(link?.getAttribute('href') ?? '');
+    button.click();
+    await fixture.whenStable();
 
+    expect(TestBed.inject(AuthSession).isSignedIn()).toBe(false);
     expect(router.routerState.snapshot.root.firstChild?.component).toBe(SignUp);
   });
 

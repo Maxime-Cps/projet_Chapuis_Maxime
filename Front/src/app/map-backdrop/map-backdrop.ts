@@ -22,11 +22,11 @@ import { Component } from '@angular/core';
       <path class="street" d="M520 0 L540 900" />
       <path class="street" d="M980 0 L1020 900" />
       <g class="building">
-        <rect x="380" y="500" width="90" height="50" rx="3" />
-        <rect x="380" y="560" width="50" height="70" rx="3" />
-        <rect x="760" y="300" width="70" height="80" rx="3" />
-        <rect x="80" y="520" width="150" height="70" rx="3" />
-        <rect x="560" y="120" width="100" height="60" rx="3" />
+        <rect x="380" y="500" width="90" height="50" />
+        <rect x="380" y="560" width="50" height="70" />
+        <rect x="760" y="300" width="70" height="80" />
+        <rect x="80" y="520" width="150" height="70" />
+        <rect x="560" y="120" width="100" height="60" />
       </g>
     </svg>
   `,

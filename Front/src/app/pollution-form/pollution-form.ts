@@ -15,13 +15,17 @@ import {PollutionApi} from '../../services/pollution-api';
 import {NewPollution, Pollution} from '../../interfaces/Pollution';
 import {ID_PARAM, LINKS} from '../../constants/routes';
 import {POLLUTION_ERRORS} from '../../constants/messages';
+import {Icon} from '../icon/icon';
+import {SignOut} from '../sign-out/sign-out';
 
 @Component({
   imports: [
     ReactiveFormsModule,
     PollutionRecap,
     MapBackdrop,
-    RouterLink
+    RouterLink,
+    Icon,
+    SignOut
   ],
   selector: 'app-pollution-form',
   styleUrl: './pollution-form.scss',
@@ -36,6 +40,7 @@ export class PollutionForm {
   private id: number | null = null;
 
   readonly links = LINKS;
+  readonly editing = this.route.snapshot.paramMap.has(ID_PARAM);
   readonly isSubmitted = signal(false);
   readonly error = signal<string | null>(null);
   readonly loading = signal(false);

@@ -1,9 +1,10 @@
 import {Component, EventEmitter, Input, Output, signal} from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {NewPollution} from '../../interfaces/Pollution';
+import {Icon} from '../icon/icon';
 
 @Component({
-  imports: [DatePipe],
+  imports: [DatePipe, Icon],
   selector: 'app-pollution-recap',
   styleUrl: './pollution-recap.scss',
   templateUrl: './pollution-recap.html',

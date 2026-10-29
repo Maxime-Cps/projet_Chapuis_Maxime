@@ -2,7 +2,10 @@
   <app-map-backdrop />
 
   <section class="panel">
-    <a class="back" [routerLink]="links.list">← Tous les signalements</a>
+    <nav class="panel-links">
+      <a class="back" [routerLink]="links.list"><app-icon name="arrow-left" />Tous les signalements</a>
+      <app-sign-out />
+    </nav>
 
     @if (loading()) {
       <p id="detail-loading" class="loading" role="status">Chargement du signalement…</p>
