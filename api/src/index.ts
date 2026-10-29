@@ -37,13 +37,9 @@ db.sequelize
       const count = await db.pollutions.count();
       if (count === 0) {
         await db.pollutions.bulkCreate([
-          { ville: "Paris", polluant: "PM2.5", valeur: 28.5, date: "2026-10-18", description: "Qualité de l'air dégradée au centre-ville" },
-          { ville: "Lyon", polluant: "NO2", valeur: 42.1, date: "2026-10-18", description: "Pic de pollution lié au trafic routier" },
-          { ville: "Marseille", polluant: "O3", valeur: 55.0, date: "2026-10-17", description: "Ozone élevé en zone côtière ensoleillée" },
-          { ville: "Strasbourg", polluant: "PM10", valeur: 34.2, date: "2026-10-18", description: "Particules en suspension modérées" },
-          { ville: "Bordeaux", polluant: "PM2.5", valeur: 15.3, date: "2026-10-16", description: "Bonne qualité globale de l'air" },
-          { ville: "Lille", polluant: "NO2", valeur: 38.7, date: "2026-10-17", description: "Trafic dense aux abords de la rocade" },
-          { ville: "Nantes", polluant: "CO2", valeur: 12.0, date: "2026-10-18", description: "Conditions atmosphériques favorables" }
+          { label: "Bouteilles sur la berge", type: { id: 0, name: "Plastique" }, description: "Une vingtaine de bouteilles plastiques accumulées sous le pont.", date: "2026-09-12T09:30", place: "Quai de la Seine, Paris", latitude: "48.8530", longitude: "2.3499", image: "" },
+          { label: "Fumée noire", type: { id: 4, name: "Air" }, description: "Fumée épaisse s'échappant d'un entrepôt.", date: "2026-10-02T18:15", place: "Zone industrielle, Compiègne", latitude: "49.4179", longitude: "2.8261", image: "" },
+          { label: "Gravats en forêt", type: { id: 2, name: "Dépôt sauvage" }, description: "Sacs de gravats et pots de peinture abandonnés au bord du chemin.", date: "2026-10-14T14:00", place: "Forêt de Chantilly", latitude: "49.1866", longitude: "2.4614", image: "" }
         ]);
         console.log("Jeu de données initial pour la table pollution inséré avec succès.");
       }
