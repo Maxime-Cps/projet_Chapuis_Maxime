@@ -46,7 +46,7 @@ services:
       # Front calls relative /api (environment.ts): proxy it to the API
       - type: rewrite
         source: /api/*
-        destination: https://pollution-api.onrender.com/api/*
+        destination: https://pollution-api-fj1n.onrender.com/api/*
       - type: rewrite
         source: /*
         destination: /index.html
