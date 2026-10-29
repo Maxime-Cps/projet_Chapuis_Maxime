@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import {POLLUTION_TYPES, PollutionType} from '../../interfaces/PollutionType';
 import {
   FormControl,
@@ -11,8 +12,7 @@ import {PollutionRecap} from '../pollution-recap/pollution-recap';
 import {notInFuture} from '../../validators/date.validators';
 import {MapBackdrop} from '../map-backdrop/map-backdrop';
 import {PollutionApi} from '../../services/pollution-api';
-import {Pollution} from '../../interfaces/Pollution';
-import {FormFields} from '../../interfaces/FormFields';
+import {NewPollution, Pollution} from '../../interfaces/Pollution';
 import {ID_PARAM, LINKS} from '../../constants/routes';
 import {POLLUTION_ERRORS} from '../../constants/messages';
 
@@ -38,6 +38,8 @@ export class PollutionForm {
   readonly links = LINKS;
   readonly isSubmitted = signal(false);
   readonly error = signal<string | null>(null);
+  readonly loading = signal(false);
+  readonly saving = signal(false);
 
   readonly pollutionTypeList = POLLUTION_TYPES;
 
@@ -59,7 +61,8 @@ export class PollutionForm {
     }
 
     this.id = Number(param);
-    this.api.getById(this.id).subscribe({
+    this.loading.set(true);
+    this.api.getById(this.id).pipe(finalize(() => this.loading.set(false))).subscribe({
       next: (pollution) => this.fill(pollution),
       error: () => this.error.set(POLLUTION_ERRORS.load),
     });
@@ -73,9 +76,10 @@ export class PollutionForm {
 
     this.error.set(null);
 
-    const fields: FormFields = this.form.getRawValue();
+    const fields: NewPollution = this.form.getRawValue();
     const save = this.id === null ? this.api.create(fields) : this.api.update({ ...fields, id: this.id });
-    save.subscribe({
+    this.saving.set(true);
+    save.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: (pollution) => {
         this.id = pollution.id;
         this.isSubmitted.set(true);

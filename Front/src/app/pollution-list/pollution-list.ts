@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { map } from 'rxjs';
+import { finalize, map } from 'rxjs';
 import { PollutionApi } from '../../services/pollution-api';
 import { Pollution } from '../../interfaces/Pollution';
 import { POLLUTION_TYPES } from '../../interfaces/PollutionType';
@@ -24,6 +24,10 @@ export class PollutionList {
   readonly types = POLLUTION_TYPES;
   readonly pollutions = signal<Pollution[]>([]);
   readonly error = signal<string | null>(null);
+  readonly loading = signal(true);
+
+  /** Ids of the pollutions being deleted, to disable their buttons meanwhile. */
+  readonly deletingIds = signal<ReadonlySet<number>>(new Set());
 
   readonly filterForm = new FormGroup({
     text: new FormControl('', { nonNullable: true }),
@@ -40,7 +44,7 @@ export class PollutionList {
   readonly visible = computed(() => this.pollutions().filter((p) => matches(p, this.filter())));
 
   constructor() {
-    this.api.getAll().subscribe({
+    this.api.getAll().pipe(finalize(() => this.loading.set(false))).subscribe({
       next: (pollutions) => this.pollutions.set(pollutions),
       error: () => this.error.set(POLLUTION_ERRORS.listLoad),
     });
@@ -52,7 +56,8 @@ export class PollutionList {
     }
 
     this.error.set(null);
-    this.api.delete(pollution.id).subscribe({
+    this.toggleDeleting(pollution.id);
+    this.api.delete(pollution.id).pipe(finalize(() => this.toggleDeleting(pollution.id))).subscribe({
       next: () => this.pollutions.update((list) => list.filter((p) => p.id !== pollution.id)),
       error: () => this.error.set(POLLUTION_ERRORS.delete),
     });
@@ -60,5 +65,15 @@ export class PollutionList {
 
   resetFilters() {
     this.filterForm.reset();
+  }
+
+  private toggleDeleting(id: number) {
+    this.deletingIds.update((ids) => {
+      const next = new Set(ids);
+      if (!next.delete(id)) {
+        next.add(id);
+      }
+      return next;
+    });
   }
 }

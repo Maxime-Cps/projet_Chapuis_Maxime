@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { PollutionApi } from '../../services/pollution-api';
 import { Pollution } from '../../interfaces/Pollution';
 import { MapBackdrop } from '../map-backdrop/map-backdrop';
@@ -21,11 +22,13 @@ export class PollutionDetail {
   readonly links = LINKS;
   readonly pollution = signal<Pollution | null>(null);
   readonly error = signal<string | null>(null);
+  readonly loading = signal(true);
+  readonly deleting = signal(false);
 
   constructor() {
     const id = Number(inject(ActivatedRoute).snapshot.paramMap.get(ID_PARAM));
 
-    this.api.getById(id).subscribe({
+    this.api.getById(id).pipe(finalize(() => this.loading.set(false))).subscribe({
       next: (pollution) => this.pollution.set(pollution),
       error: (err: HttpErrorResponse) => {
         const notFound = err.status === HttpStatusCode.NotFound;
@@ -40,7 +43,8 @@ export class PollutionDetail {
     }
 
     this.error.set(null);
-    this.api.delete(pollution.id).subscribe({
+    this.deleting.set(true);
+    this.api.delete(pollution.id).pipe(finalize(() => this.deleting.set(false))).subscribe({
       next: () => this.router.navigateByUrl(LINKS.list),
       error: () => this.error.set(POLLUTION_ERRORS.delete),
     });

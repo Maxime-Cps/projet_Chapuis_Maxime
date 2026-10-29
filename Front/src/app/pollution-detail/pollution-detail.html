@@ -4,6 +4,10 @@
   <section class="panel">
     <a class="back" [routerLink]="links.list">← Tous les signalements</a>
 
+    @if (loading()) {
+      <p id="detail-loading" class="loading" role="status">Chargement du signalement…</p>
+    }
+
     @if (error(); as error) {
       <p id="detail-error" class="error" role="alert">{{ error }}</p>
     }
@@ -35,7 +39,9 @@
       </dl>
 
       <div class="actions">
-        <button type="button" class="btn-danger" (click)="remove(pollution)">Supprimer</button>
+        <button type="button" class="btn-danger" (click)="remove(pollution)" [disabled]="deleting()">
+          {{ deleting() ? 'Suppression…' : 'Supprimer' }}
+        </button>
         <a class="btn-primary" [routerLink]="links.edit(pollution.id)">Modifier</a>
       </div>
     }

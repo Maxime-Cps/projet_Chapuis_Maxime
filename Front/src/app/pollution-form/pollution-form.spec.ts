@@ -25,6 +25,30 @@ describe('PollutionForm', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should disable the submit button while saving', async () => {
+    vi.useFakeTimers();
+    component.form.setValue({
+      label: 'Bouteilles',
+      type: component.pollutionTypeList[0],
+      description: 'Sous le pont',
+      date: '2026-01-01T10:00',
+      place: 'Paris',
+      latitude: 48.85,
+      longitude: 2.34,
+      image: '',
+    });
+
+    component.onSubmit();
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('button[type=submit]') as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+
+    await vi.runAllTimersAsync();
+    vi.useRealTimers();
+    expect(component.isSubmitted()).toBe(true);
+  });
+
   it('should link to the sign-up page', async () => {
     const router = TestBed.inject(Router);
     const link = fixture.nativeElement.querySelector('#sign-up-link') as HTMLAnchorElement | null;

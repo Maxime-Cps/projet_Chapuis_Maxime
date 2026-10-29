@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { PollutionList } from './pollution-list';
 import { PollutionForm } from '../pollution-form/pollution-form';
 import { routes } from '../app.routes';
@@ -41,6 +41,21 @@ describe('PollutionList', () => {
     const items = fixture.nativeElement.querySelectorAll('.item-label') as NodeListOf<HTMLElement>;
     return Array.from(items, (item) => item.textContent!.trim());
   }
+
+  it('should show a loading state until the list arrives', async () => {
+    const response = new Subject<Pollution[]>();
+    api.getAll.mockReturnValue(response);
+    const pending = TestBed.createComponent(PollutionList);
+    await pending.whenStable();
+
+    expect(pending.nativeElement.querySelector('#list-loading')).not.toBeNull();
+
+    response.next([PLASTIC]);
+    response.complete();
+    await pending.whenStable();
+
+    expect(pending.nativeElement.querySelector('#list-loading')).toBeNull();
+  });
 
   it('should display every pollution', () => {
     expect(labels()).toEqual(['Bouteilles', 'Fumée']);

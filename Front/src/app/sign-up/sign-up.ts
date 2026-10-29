@@ -2,7 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Api } from '../../services/api';
+import { finalize } from 'rxjs';
+import { AuthApi } from '../../services/auth-api';
 import { SignUpRequest } from '../../interfaces/SignUpRequest';
 import { User } from '../../interfaces/User';
 import { LINKS } from '../../constants/routes';
@@ -17,12 +18,13 @@ const PASSWORD_MIN_LENGTH = 8;
   templateUrl: './sign-up.html',
 })
 export class SignUp {
-  private readonly api = inject(Api);
+  private readonly api = inject(AuthApi);
 
   readonly links = LINKS;
   readonly passwordMinLength = PASSWORD_MIN_LENGTH;
   readonly user = signal<User | null>(null);
   readonly error = signal<string | null>(null);
+  readonly saving = signal(false);
 
   readonly form = new FormGroup({
     firstName: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -46,7 +48,8 @@ export class SignUp {
     this.error.set(null);
 
     const request: SignUpRequest = this.form.getRawValue();
-    this.api.signUp(request).subscribe({
+    this.saving.set(true);
+    this.api.signUp(request).pipe(finalize(() => this.saving.set(false))).subscribe({
       next: (user) => {
         this.user.set(user);
       },

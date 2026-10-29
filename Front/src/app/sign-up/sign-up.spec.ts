@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { SignUp } from './sign-up';
-import { Api } from '../../services/api';
+import { AuthApi } from '../../services/auth-api';
 import { User } from '../../interfaces/User';
 
 describe('SignUp', () => {
@@ -18,7 +18,7 @@ describe('SignUp', () => {
 
     await TestBed.configureTestingModule({
       imports: [SignUp],
-      providers: [provideRouter([]), { provide: Api, useValue: api }],
+      providers: [provideRouter([]), { provide: AuthApi, useValue: api }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SignUp);
@@ -39,6 +39,17 @@ describe('SignUp', () => {
     component.onSubmit();
 
     expect(api.signUp).not.toHaveBeenCalled();
+  });
+
+  it('should disable the submit button while the request is pending', async () => {
+    api.signUp.mockReturnValue(new Subject<User>());
+    fillForm();
+
+    component.onSubmit();
+    await fixture.whenStable();
+
+    const button = fixture.nativeElement.querySelector('button[type=submit]') as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
   });
 
   it('should display the created user', async () => {

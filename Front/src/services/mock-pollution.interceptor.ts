@@ -1,5 +1,6 @@
 import {
   HttpErrorResponse,
+  HttpEvent,
   HttpInterceptorFn,
   HttpRequest,
   HttpResponse,
@@ -8,9 +9,11 @@ import {
 import { inject, Service } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { PollutionApi } from './pollution-api';
-import { FormFields } from '../interfaces/FormFields';
-import { Pollution } from '../interfaces/Pollution';
+import { withLatency } from './mock-latency';
+import { NewPollution, Pollution } from '../interfaces/Pollution';
 import { POLLUTION_TYPES } from '../interfaces/PollutionType';
+
+type MockResponse = Observable<HttpEvent<unknown>>;
 
 const SEED: Pollution[] = [
   {
@@ -62,7 +65,7 @@ export class MockPollutionStore {
     return structuredClone(this.pollutions.find((p) => p.id === id));
   }
 
-  add(fields: FormFields): Pollution {
+  add(fields: NewPollution): Pollution {
     const pollution: Pollution = { ...fields, id: this.nextId++ };
     this.pollutions.push(pollution);
     return structuredClone(pollution);
@@ -92,26 +95,26 @@ export const mockPollutionInterceptor: HttpInterceptorFn = (req, next) => {
   const store = inject(MockPollutionStore);
 
   if (isCollection) {
-    return collection(req, store);
+    return collection(req, store).pipe(withLatency());
   }
 
   const id = Number(req.url.slice(PollutionApi.URL.length + 1));
-  return item(req, store, id);
+  return item(req, store, id).pipe(withLatency());
 };
 
-function collection(req: HttpRequest<unknown>, store: MockPollutionStore) {
+function collection(req: HttpRequest<unknown>, store: MockPollutionStore): MockResponse {
   if (req.method === 'GET') {
     return respond(HttpStatusCode.Ok, store.all());
   }
 
   if (req.method === 'POST') {
-    return respond(HttpStatusCode.Created, store.add(req.body as FormFields));
+    return respond(HttpStatusCode.Created, store.add(req.body as NewPollution));
   }
 
   return fail(req, HttpStatusCode.MethodNotAllowed);
 }
 
-function item(req: HttpRequest<unknown>, store: MockPollutionStore, id: number) {
+function item(req: HttpRequest<unknown>, store: MockPollutionStore, id: number): MockResponse {
   const found = store.find(id);
   if (!found) {
     return fail(req, HttpStatusCode.NotFound);

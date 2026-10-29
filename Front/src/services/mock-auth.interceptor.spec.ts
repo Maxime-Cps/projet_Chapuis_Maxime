@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpStatusCode, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { Api } from './api';
-import { mockApiInterceptor, ALREADY_TAKEN_EMAIL } from './mock-api.interceptor';
+import { AuthApi } from './auth-api';
+import { mockAuthInterceptor, ALREADY_TAKEN_EMAIL } from './mock-auth.interceptor';
 import { SignUpRequest } from '../interfaces/SignUpRequest';
 
-describe('mockApiInterceptor', () => {
+describe('mockAuthInterceptor', () => {
   const REQUEST: SignUpRequest = {
     firstName: 'Ada',
     lastName: 'Lovelace',
@@ -13,14 +13,14 @@ describe('mockApiInterceptor', () => {
     password: 'secret123',
   };
 
-  let api: Api;
+  let api: AuthApi;
 
   beforeEach(() => {
     vi.useFakeTimers();
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(withInterceptors([mockApiInterceptor]))],
+      providers: [provideHttpClient(withInterceptors([mockAuthInterceptor]))],
     });
-    api = TestBed.inject(Api);
+    api = TestBed.inject(AuthApi);
   });
 
   afterEach(() => vi.useRealTimers());

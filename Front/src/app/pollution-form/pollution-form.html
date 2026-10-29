@@ -15,7 +15,9 @@
       <a id="sign-up-link" class="back" [routerLink]="links.signUp">Créer un compte</a>
     </nav>
 
-    @if (!isSubmitted()) {
+    @if (loading()) {
+      <p id="form-loading" class="loading" role="status">Chargement du signalement…</p>
+    } @else if (!isSubmitted()) {
       <header class="panel-head">
         <span class="eyebrow">Nouveau signalement</span>
         <h1>Signaler une pollution</h1>
@@ -124,7 +126,9 @@
           <p id="form-error" class="hint error" role="alert">{{ error }}</p>
         }
 
-        <button type="submit" class="btn-primary">Envoyer le signalement</button>
+        <button type="submit" class="btn-primary" [disabled]="saving()">
+          {{ saving() ? 'Envoi…' : 'Envoyer le signalement' }}
+        </button>
       </form>
     } @else {
       <app-pollution-recap

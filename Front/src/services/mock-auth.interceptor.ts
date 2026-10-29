@@ -1,13 +1,14 @@
 import { HttpInterceptorFn, HttpResponse, HttpStatusCode, HttpErrorResponse } from '@angular/common/http';
-import { delay, of, throwError } from 'rxjs';
-import { Api } from './api';
+import { of, throwError } from 'rxjs';
+import { AuthApi } from './auth-api';
+import { withLatency } from './mock-latency';
 import { SignUpRequest } from '../interfaces/SignUpRequest';
 import { User } from '../interfaces/User';
 
 export const ALREADY_TAKEN_EMAIL = 'maxime@test.com';
 
-export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.method !== 'POST' || req.url !== Api.SIGN_UP_URL) {
+export const mockAuthInterceptor: HttpInterceptorFn = (req, next) => {
+  if (req.method !== 'POST' || req.url !== AuthApi.SIGN_UP_URL) {
     return next(req);
   }
 
@@ -15,10 +16,10 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
 
   if (profile.email === ALREADY_TAKEN_EMAIL) {
     const conflict = new HttpErrorResponse({ status: HttpStatusCode.Conflict, url: req.url });
-    return throwError(() => conflict);
+    return throwError(() => conflict).pipe(withLatency());
   }
 
   const user: User = { id: Date.now(), ...profile };
   const created = new HttpResponse({ status: HttpStatusCode.Created, body: user });
-  return of(created);
+  return of(created).pipe(withLatency());
 };

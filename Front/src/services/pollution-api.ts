@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
-import { FormFields } from '../interfaces/FormFields';
-import { Pollution } from '../interfaces/Pollution';
+import { NewPollution, Pollution } from '../interfaces/Pollution';
 
 /** CRUD client for the pollution reports API. */
 @Service()
@@ -20,8 +19,8 @@ export class PollutionApi {
     return this.http.get<Pollution>(PollutionApi.itemUrl(id));
   }
 
-  create(fields: FormFields): Observable<Pollution> {
-    return this.http.post<Pollution>(PollutionApi.URL, fields);
+  create(pollution: NewPollution): Observable<Pollution> {
+    return this.http.post<Pollution>(PollutionApi.URL, pollution);
   }
 
   update(pollution: Pollution): Observable<Pollution> {

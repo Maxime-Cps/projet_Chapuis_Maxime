@@ -89,6 +89,11 @@
     outline: 2px solid var(--accent);
     outline-offset: 3px;
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
 }
 
 .btn-primary {
@@ -143,8 +148,46 @@
   }
 }
 
+.icon-btn:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
 .icon-btn-danger {
   --tone: var(--error);
+}
+
+// Attente d'une réponse de l'API
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 1.5rem 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+
+  &::before {
+    content: '';
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 700ms linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading::before {
+    animation: none;
+  }
 }
 
 // Badge du type de pollution
