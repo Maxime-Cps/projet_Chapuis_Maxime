@@ -1,15 +1,16 @@
 import {Component, EventEmitter, Input, Output, signal} from '@angular/core';
 import {DatePipe} from '@angular/common';
-import {FormFields} from '../../interfaces/FormFields';
+import {NewPollution} from '../../interfaces/Pollution';
+import {Icon} from '../icon/icon';
 
 @Component({
-  imports: [DatePipe],
+  imports: [DatePipe, Icon],
   selector: 'app-pollution-recap',
   styleUrl: './pollution-recap.scss',
   templateUrl: './pollution-recap.html',
 })
 export class PollutionRecap {
-  @Input() data : FormFields | undefined;
+  @Input() data : NewPollution | undefined;
 
   /** Emitted when the user wants to go back to the form to edit it. */
   @Output() back = new EventEmitter<void>();

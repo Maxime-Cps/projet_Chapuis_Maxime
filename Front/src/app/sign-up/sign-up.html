@@ -1,79 +1,63 @@
 <main class="page">
   <section class="panel">
-    @if (user(); as user) {
-      <header class="panel-head">
-        <span class="eyebrow">Compte créé</span>
-        <h1>Bienvenue, {{ user.firstName }}</h1>
-      </header>
+    <header class="panel-head">
+      <h1>Créer un compte</h1>
+      <p class="lead">Un compte est nécessaire pour signaler et consulter les pollutions.</p>
+      <p class="lead">Tous les champs sont obligatoires.</p>
+    </header>
 
-      <dl class="recap">
-        <dt>Identifiant</dt>
-        <dd class="mono">{{ user.id }}</dd>
-        <dt>Nom</dt>
-        <dd>{{ user.firstName }} {{ user.lastName }}</dd>
-        <dt>Email</dt>
-        <dd>{{ user.email }}</dd>
-      </dl>
-
-      <button type="button" class="btn-primary" (click)="restart()">Nouvelle inscription</button>
-    } @else {
-      <header class="panel-head">
-        <span class="eyebrow">Inscription</span>
-        <h1>Créer un compte</h1>
-        <p class="lead">Tous les champs sont obligatoires.</p>
-      </header>
-
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-        <div class="row">
-          <div class="field">
-            <label for="signUpFirstName">Prénom</label>
-            <input id="signUpFirstName" formControlName="firstName" type="text" autocomplete="given-name" />
-          </div>
-
-          <div class="field">
-            <label for="signUpLastName">Nom</label>
-            <input id="signUpLastName" formControlName="lastName" type="text" autocomplete="family-name" />
-          </div>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="row">
+        <div class="field">
+          <label for="signUpFirstName">Prénom</label>
+          <input id="signUpFirstName" formControlName="firstName" type="text" autocomplete="given-name" />
         </div>
 
         <div class="field">
-          <label for="signUpEmail">Email</label>
-          <input
-            id="signUpEmail"
-            formControlName="email"
-            type="email"
-            autocomplete="email"
-            aria-describedby="email-hint"
-          />
-          @if (form.controls.email.touched && form.controls.email.errors?.['email']) {
-            <small id="email-hint" class="hint error" role="alert">Email invalide.</small>
-          }
+          <label for="signUpLastName">Nom</label>
+          <input id="signUpLastName" formControlName="lastName" type="text" autocomplete="family-name" />
         </div>
+      </div>
 
-        <div class="field">
-          <label for="signUpPassword">Mot de passe</label>
-          <input
-            id="signUpPassword"
-            formControlName="password"
-            type="password"
-            autocomplete="new-password"
-            aria-describedby="password-hint"
-          />
-          @if (form.controls.password.touched && form.controls.password.errors?.['minlength']) {
-            <small id="password-hint" class="hint error" role="alert">
-              {{ passwordMinLength }} caractères minimum.
-            </small>
-          }
-        </div>
-
-        @if (error(); as error) {
-          <p id="sign-up-error" class="hint error" role="alert">{{ error }}</p>
+      <div class="field">
+        <label for="signUpEmail">Email</label>
+        <input
+          id="signUpEmail"
+          formControlName="email"
+          type="email"
+          autocomplete="email"
+          aria-describedby="email-hint"
+        />
+        @if (form.controls.email.touched && form.controls.email.errors?.['email']) {
+          <small id="email-hint" class="hint error" role="alert">Email invalide.</small>
         }
+      </div>
 
-        <button type="submit" class="btn-primary" [disabled]="isLoading()">
-          {{ isLoading() ? 'Inscription…' : "S'inscrire" }}
-        </button>
-      </form>
-    }
+      <div class="field">
+        <label for="signUpPassword">Mot de passe</label>
+        <input
+          id="signUpPassword"
+          formControlName="password"
+          type="password"
+          autocomplete="new-password"
+          aria-describedby="password-hint"
+        />
+        @if (form.controls.password.touched && form.controls.password.errors?.['minlength']) {
+          <small id="password-hint" class="hint error" role="alert">
+            {{ passwordMinLength }} caractères minimum.
+          </small>
+        }
+      </div>
+
+      @if (error(); as error) {
+        <p id="sign-up-error" class="hint error" role="alert">{{ error }}</p>
+      }
+
+      <button type="submit" class="btn-primary" [disabled]="saving()">
+        {{ saving() ? 'Inscription…' : 'Créer mon compte' }}
+      </button>
+    </form>
+
+    <p class="switch">Déjà un compte ? <a id="login-link" [routerLink]="links.login">Se connecter</a></p>
   </section>
 </main>

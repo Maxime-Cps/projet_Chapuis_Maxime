@@ -1,19 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { Api } from './api';
+import { AuthApi } from './auth-api';
+import { LoginRequest } from '../interfaces/LoginRequest';
 import { SignUpRequest } from '../interfaces/SignUpRequest';
 import { User } from '../interfaces/User';
 
-describe('Api', () => {
-  let service: Api;
+describe('AuthApi', () => {
+  let service: AuthApi;
   let http: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
-    service = TestBed.inject(Api);
+    service = TestBed.inject(AuthApi);
     http = TestBed.inject(HttpTestingController);
   });
 
@@ -31,11 +32,26 @@ describe('Api', () => {
 
     service.signUp(request).subscribe((user) => (result = user));
 
-    const req = http.expectOne(Api.SIGN_UP_URL);
+    const req = http.expectOne(AuthApi.SIGN_UP_URL);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(request);
     req.flush(created);
 
     expect(result).toEqual(created);
+  });
+
+  it('should POST the login request and return the user', () => {
+    const request: LoginRequest = { email: 'ada@example.com', password: 'secret123' };
+    const user: User = { id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' };
+    let result: User | undefined;
+
+    service.login(request).subscribe((u) => (result = u));
+
+    const req = http.expectOne(AuthApi.LOGIN_URL);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(request);
+    req.flush(user);
+
+    expect(result).toEqual(user);
   });
 });

@@ -1,5 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideRouter, Router } from '@angular/router';
 import { PollutionForm } from './pollution-form';
+import { mockPollutionInterceptor } from '../../services/mock-pollution.interceptor';
+import { routes } from '../app.routes';
+import { SignUp } from '../sign-up/sign-up';
+import { AuthSession } from '../../services/auth-session';
 
 describe('PollutionForm', () => {
   let component: PollutionForm;
@@ -8,8 +14,10 @@ describe('PollutionForm', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PollutionForm],
+      providers: [provideHttpClient(withInterceptors([mockPollutionInterceptor])), provideRouter(routes)],
     }).compileComponents();
 
+    TestBed.inject(AuthSession).start({ id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' });
     fixture = TestBed.createComponent(PollutionForm);
     component = fixture.componentInstance;
     await fixture.whenStable();
@@ -17,6 +25,41 @@ describe('PollutionForm', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should disable the submit button while saving', async () => {
+    vi.useFakeTimers();
+    component.form.setValue({
+      label: 'Bouteilles',
+      type: component.pollutionTypeList[0],
+      description: 'Sous le pont',
+      date: '2026-01-01T10:00',
+      place: 'Paris',
+      latitude: 48.85,
+      longitude: 2.34,
+      image: '',
+    });
+
+    component.onSubmit();
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('button[type=submit]') as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+
+    await vi.runAllTimersAsync();
+    vi.useRealTimers();
+    expect(component.isSubmitted()).toBe(true);
+  });
+
+  it('should sign out and go to the sign-up page', async () => {
+    const router = TestBed.inject(Router);
+    const button = fixture.nativeElement.querySelector('app-sign-out button') as HTMLButtonElement;
+
+    button.click();
+    await fixture.whenStable();
+
+    expect(TestBed.inject(AuthSession).isSignedIn()).toBe(false);
+    expect(router.routerState.snapshot.root.firstChild?.component).toBe(SignUp);
   });
 
   describe('with a future observation date', () => {

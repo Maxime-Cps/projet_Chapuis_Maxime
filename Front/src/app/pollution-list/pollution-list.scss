@@ -1,0 +1,193 @@
+.page {
+  display: flex;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 1.5rem 1rem;
+  background: var(--bg);
+}
+
+.panel {
+  gap: 1rem;
+  width: min(48rem, 100%);
+  align-self: flex-start;
+
+  @media (max-width: 30rem) {
+    padding: 1.25rem 1rem;
+  }
+}
+
+.panel-head {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+
+  h1 {
+    margin-top: 0.25rem;
+  }
+}
+
+.panel-links-end {
+  justify-content: flex-end;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+// Sur mobile, le libellé « Tous les types » ne tient pas dans une demi-colonne
+.field-type {
+  @media (max-width: 30rem) {
+    grid-column: 1 / -1;
+  }
+}
+
+.btn-primary,
+.btn-secondary {
+  min-height: 2.75rem;
+}
+
+.error {
+  margin: 0;
+  font-size: var(--text-small);
+}
+
+.results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.view-switch {
+  display: flex;
+  gap: 0.25rem;
+
+  .icon-btn {
+    --tone: var(--muted);
+  }
+
+  .icon-btn[aria-pressed='true'] {
+    --tone: var(--accent);
+
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+}
+
+.count {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--muted);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.item-link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 1rem 0;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover .item-label {
+    color: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.item-label {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.item-meta {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+// Affichage en cartes : grille d'images, mêmes informations que la liste
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1rem;
+  border-top: 0;
+
+  .item {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .item-link {
+    padding: 0 0 1rem;
+
+    > :not(.item-photo) {
+      margin-inline: 1rem;
+    }
+  }
+
+  .type {
+    margin-top: 0.75rem;
+  }
+
+  .icon-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: var(--panel);
+
+    &:hover {
+      background: color-mix(in srgb, var(--tone) 12%, var(--panel));
+    }
+  }
+
+  .empty {
+    grid-column: 1 / -1;
+  }
+}
+
+.item-photo {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--field);
+  border-bottom: 1px solid var(--border);
+}
+
+.empty {
+  padding: 1.5rem 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+  text-align: center;
+}

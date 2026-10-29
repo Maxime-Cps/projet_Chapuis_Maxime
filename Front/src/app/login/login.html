@@ -1,0 +1,39 @@
+<main class="page">
+  <section class="panel">
+    <header class="panel-head">
+      <h1>Se connecter</h1>
+      <p class="lead">Connectez-vous pour signaler et consulter les pollutions.</p>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input
+          id="loginEmail"
+          formControlName="email"
+          type="email"
+          autocomplete="email"
+          aria-describedby="login-email-hint"
+        />
+        @if (form.controls.email.touched && form.controls.email.errors?.['email']) {
+          <small id="login-email-hint" class="hint error" role="alert">Email invalide.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="loginPassword">Mot de passe</label>
+        <input id="loginPassword" formControlName="password" type="password" autocomplete="current-password" />
+      </div>
+
+      @if (error(); as error) {
+        <p id="login-error" class="hint error" role="alert">{{ error }}</p>
+      }
+
+      <button type="submit" class="btn-primary" [disabled]="saving()">
+        {{ saving() ? 'Connexion…' : 'Se connecter' }}
+      </button>
+    </form>
+
+    <p class="switch">Pas encore de compte ? <a id="sign-up-link" [routerLink]="links.signUp">Créer un compte</a></p>
+  </section>
+</main>

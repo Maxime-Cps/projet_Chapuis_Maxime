@@ -1,0 +1,124 @@
+<main class="page">
+  <section class="panel">
+    <nav class="panel-links panel-links-end">
+      <app-sign-out />
+    </nav>
+
+    <header class="panel-head">
+      <h1>Pollutions signalées</h1>
+      <a class="btn-primary" [routerLink]="links.report">Signaler une pollution</a>
+    </header>
+
+    <form class="filters" [formGroup]="filterForm" role="search">
+      <div class="field field-wide">
+        <label for="filterText">Recherche</label>
+        <input
+          id="filterText"
+          formControlName="text"
+          type="search"
+          placeholder="Titre, lieu, description"
+        />
+      </div>
+
+      <div class="field field-type">
+        <label for="filterType">Type</label>
+        <div class="select">
+          <select id="filterType" formControlName="typeId">
+            <option [ngValue]="null">Tous les types</option>
+            @for (type of types; track type.id) {
+              <option [ngValue]="type.id">{{ type.name }}</option>
+            }
+          </select>
+          <app-icon name="chevron-down" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="filterFrom">Du</label>
+        <input id="filterFrom" formControlName="from" type="date" />
+      </div>
+
+      <div class="field">
+        <label for="filterTo">Au</label>
+        <input id="filterTo" formControlName="to" type="date" />
+      </div>
+
+      <button type="button" class="btn-secondary" (click)="resetFilters()">Réinitialiser</button>
+    </form>
+
+    @if (error(); as error) {
+      <p id="list-error" class="error" role="alert">{{ error }}</p>
+    }
+
+    @if (loading()) {
+      <p id="list-loading" class="loading" role="status">Chargement des signalements…</p>
+    } @else {
+      <div class="results-bar">
+        <p class="count" aria-live="polite">
+          {{ visible().length }} sur {{ pollutions().length }} signalement(s)
+        </p>
+
+        <div class="view-switch" role="group" aria-label="Affichage">
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label="Liste"
+            title="Liste"
+            [attr.aria-pressed]="view() === views.List"
+            (click)="setView(views.List)"
+          >
+            <app-icon name="list" />
+          </button>
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label="Cartes"
+            title="Cartes"
+            [attr.aria-pressed]="view() === views.Cards"
+            (click)="setView(views.Cards)"
+          >
+            <app-icon name="layout-grid" />
+          </button>
+        </div>
+      </div>
+
+      <ul class="list" [class.cards]="view() === views.Cards">
+        @for (pollution of visible(); track pollution.id) {
+          <li class="item">
+            <a class="item-link" [routerLink]="links.detail(pollution.id)">
+              @if (view() === views.Cards) {
+                @if (pollution.image && !brokenImageIds().has(pollution.id)) {
+                  <img
+                    class="item-photo"
+                    [src]="pollution.image"
+                    alt=""
+                    loading="lazy"
+                    (error)="markImageBroken(pollution.id)"
+                  />
+                } @else {
+                  <span class="item-photo photo-empty">Aucune image</span>
+                }
+              }
+              <span class="type">{{ pollution.type.name }}</span>
+              <span class="item-label">{{ pollution.label }}</span>
+              <span class="item-meta"
+                >{{ pollution.place }} · {{ pollution.date | date: 'dd/MM/yyyy' }}</span
+              >
+            </a>
+            <button
+              type="button"
+              class="icon-btn icon-btn-danger"
+              (click)="remove(pollution)"
+              [disabled]="deletingIds().has(pollution.id)"
+              [attr.aria-label]="'Supprimer ' + pollution.label"
+            >
+              <app-icon name="trash-2" />
+            </button>
+          </li>
+        } @empty {
+          <li class="empty">Aucun signalement ne correspond.</li>
+        }
+      </ul>
+    }
+  </section>
+</main>
