@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import db from "../models";
 import { readPollution } from "../validators/pollution.validator";
+import { errorMessage } from "../utils/request";
 
 const Pollutions = db.pollutions;
 
@@ -48,10 +49,6 @@ export const getById = async (req: Request, res: Response): Promise<void> => {
 function readId(req: Request): number | null {
   const id = Number(req.params.id);
   return Number.isInteger(id) && id > 0 ? id : null;
-}
-
-function errorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
 }
 
 /**

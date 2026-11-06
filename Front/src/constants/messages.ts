@@ -7,6 +7,11 @@ export const POLLUTION_ERRORS = {
   delete: 'La suppression a échoué. Réessayez.',
 } as const;
 
+/** User-facing error messages for the user list. */
+export const USER_ERRORS = {
+  listLoad: 'Impossible de charger les utilisateurs.',
+} as const;
+
 /** User-facing error messages for sign-up. */
 export const SIGN_UP_ERRORS = {
   emailTaken: 'Cet email est déjà utilisé.',

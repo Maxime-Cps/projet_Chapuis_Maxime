@@ -3,6 +3,7 @@ const LIST = 'pollutions';
 const SIGN_UP = 'signup';
 const LOGIN = 'login';
 const EDIT = 'edit';
+const USERS = 'users';
 
 /** Name of the route parameter holding a pollution id. */
 export const ID_PARAM = 'id';
@@ -13,6 +14,7 @@ export const ROUTE_PATHS = {
   list: LIST,
   detail: `${LIST}/:${ID_PARAM}`,
   edit: `${LIST}/:${ID_PARAM}/${EDIT}`,
+  users: USERS,
   signUp: SIGN_UP,
   login: LOGIN,
 } as const;
@@ -23,6 +25,7 @@ export const PAGE_TITLES = {
   list: 'Pollutions signalées',
   detail: 'Détail du signalement',
   edit: 'Modifier le signalement',
+  users: 'Utilisateurs',
   signUp: 'Créer un compte',
   login: 'Se connecter',
 } as const;
@@ -35,6 +38,7 @@ export const PAGE_TITLES = {
 export const LINKS = {
   report: `/${REPORT}`,
   list: `/${LIST}`,
+  users: `/${USERS}`,
   signUp: `/${SIGN_UP}`,
   login: `/${LOGIN}`,
   detail: (id: number) => `/${LIST}/${id}`,

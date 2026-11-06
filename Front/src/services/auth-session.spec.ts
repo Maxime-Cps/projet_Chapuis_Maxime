@@ -1,9 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { AuthSession } from './auth-session';
-import { User } from '../interfaces/User';
+import { Session } from '../interfaces/Session';
 
 describe('AuthSession', () => {
-  const USER: User = { id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' };
+  const SESSION: Session = {
+    user: { id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' },
+    token: 'signed-token',
+  };
 
   beforeEach(() => {
     sessionStorage.clear();
@@ -15,22 +18,30 @@ describe('AuthSession', () => {
   });
 
   it('should restore a started session after a reload', () => {
-    TestBed.inject(AuthSession).start(USER);
+    TestBed.inject(AuthSession).start(SESSION);
 
     TestBed.resetTestingModule();
 
-    expect(TestBed.inject(AuthSession).user()).toEqual(USER);
+    const restored = TestBed.inject(AuthSession);
+    expect(restored.user()).toEqual(SESSION.user);
+    expect(restored.token()).toBe(SESSION.token);
   });
 
-  it('should ignore a malformed stored user', () => {
-    sessionStorage.setItem('auth.user', '{}');
+  it('should ignore a malformed stored session', () => {
+    sessionStorage.setItem('auth.session', '{}');
+
+    expect(TestBed.inject(AuthSession).isSignedIn()).toBe(false);
+  });
+
+  it('should ignore a stored session without token', () => {
+    sessionStorage.setItem('auth.session', JSON.stringify({ user: SESSION.user }));
 
     expect(TestBed.inject(AuthSession).isSignedIn()).toBe(false);
   });
 
   it('should forget the user once ended', () => {
     const session = TestBed.inject(AuthSession);
-    session.start(USER);
+    session.start(SESSION);
 
     session.end();
 

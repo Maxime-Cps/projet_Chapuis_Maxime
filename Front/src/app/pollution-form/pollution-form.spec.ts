@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router } from '@angular/router';
 import { PollutionForm } from './pollution-form';
-import { mockPollutionInterceptor } from '../../services/mock-pollution.interceptor';
+import { PollutionApi } from '../../services/pollution-api';
 import { routes } from '../app.routes';
 import { SignUp } from '../sign-up/sign-up';
 import { AuthSession } from '../../services/auth-session';
@@ -14,10 +15,13 @@ describe('PollutionForm', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PollutionForm],
-      providers: [provideHttpClient(withInterceptors([mockPollutionInterceptor])), provideRouter(routes)],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter(routes)],
     }).compileComponents();
 
-    TestBed.inject(AuthSession).start({ id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' });
+    TestBed.inject(AuthSession).start({
+      user: { id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' },
+      token: 'signed-token',
+    });
     fixture = TestBed.createComponent(PollutionForm);
     component = fixture.componentInstance;
     await fixture.whenStable();
@@ -28,7 +32,6 @@ describe('PollutionForm', () => {
   });
 
   it('should disable the submit button while saving', async () => {
-    vi.useFakeTimers();
     component.form.setValue({
       label: 'Bouteilles',
       type: component.pollutionTypeList[0],
@@ -46,8 +49,8 @@ describe('PollutionForm', () => {
     const button = fixture.nativeElement.querySelector('button[type=submit]') as HTMLButtonElement;
     expect(button.disabled).toBe(true);
 
-    await vi.runAllTimersAsync();
-    vi.useRealTimers();
+    const req = TestBed.inject(HttpTestingController).expectOne(PollutionApi.URL);
+    req.flush({ ...req.request.body, id: 1 });
     expect(component.isSubmitted()).toBe(true);
   });
 

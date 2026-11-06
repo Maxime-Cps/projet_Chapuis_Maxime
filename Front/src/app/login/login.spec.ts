@@ -5,11 +5,14 @@ import { of, throwError } from 'rxjs';
 import { Login } from './login';
 import { AuthApi } from '../../services/auth-api';
 import { AuthSession } from '../../services/auth-session';
-import { User } from '../../interfaces/User';
+import { Session } from '../../interfaces/Session';
 import { routes } from '../app.routes';
 
 describe('Login', () => {
-  const USER: User = { id: 7, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' };
+  const SESSION: Session = {
+    user: { id: 7, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' },
+    token: 'signed-token',
+  };
 
   let component: Login;
   let fixture: ComponentFixture<Login>;
@@ -40,13 +43,13 @@ describe('Login', () => {
   });
 
   it('should sign the user in and open the pollution list', async () => {
-    api.login.mockReturnValue(of(USER));
+    api.login.mockReturnValue(of(SESSION));
     fillForm();
 
     component.onSubmit();
     await fixture.whenStable();
 
-    expect(TestBed.inject(AuthSession).user()).toEqual(USER);
+    expect(TestBed.inject(AuthSession).user()).toEqual(SESSION.user);
     expect(TestBed.inject(Router).url).toBe('/pollutions');
   });
 
