@@ -3,8 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthApi } from './auth-api';
 import { LoginRequest } from '../interfaces/LoginRequest';
-import { SignUpRequest } from '../interfaces/SignUpRequest';
-import { User } from '../interfaces/User';
+import { Session } from '../interfaces/Session';
 
 describe('AuthApi', () => {
   let service: AuthApi;
@@ -20,38 +19,21 @@ describe('AuthApi', () => {
 
   afterEach(() => http.verify());
 
-  it('should POST the sign-up request and return the user', () => {
-    const request: SignUpRequest = {
-      firstName: 'Ada',
-      lastName: 'Lovelace',
-      email: 'ada@example.com',
-      password: 'secret123',
-    };
-    const created: User = { id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' };
-    let result: User | undefined;
-
-    service.signUp(request).subscribe((user) => (result = user));
-
-    const req = http.expectOne(AuthApi.SIGN_UP_URL);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(request);
-    req.flush(created);
-
-    expect(result).toEqual(created);
-  });
-
-  it('should POST the login request and return the user', () => {
+  it('should POST the login request and return the session', () => {
     const request: LoginRequest = { email: 'ada@example.com', password: 'secret123' };
-    const user: User = { id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' };
-    let result: User | undefined;
+    const session: Session = {
+      user: { id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' },
+      token: 'signed-token',
+    };
+    let result: Session | undefined;
 
-    service.login(request).subscribe((u) => (result = u));
+    service.login(request).subscribe((s) => (result = s));
 
     const req = http.expectOne(AuthApi.LOGIN_URL);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(request);
-    req.flush(user);
+    req.flush(session);
 
-    expect(result).toEqual(user);
+    expect(result).toEqual(session);
   });
 });

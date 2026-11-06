@@ -41,7 +41,10 @@ describe('PollutionList', () => {
       providers: [provideRouter(routes), { provide: PollutionApi, useValue: api }],
     }).compileComponents();
 
-    TestBed.inject(AuthSession).start({ id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' });
+    TestBed.inject(AuthSession).start({
+      user: { id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' },
+      token: 'signed-token',
+    });
     fixture = TestBed.createComponent(PollutionList);
     component = fixture.componentInstance;
     await fixture.whenStable();

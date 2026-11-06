@@ -32,6 +32,8 @@ services:
         fromDatabase:
           name: pollution-db
           property: connectionString
+      - key: AUTH_SECRET
+        generateValue: true
 
   # -------------------------------------------------------------
   # Application Frontend Angular (Site Statique)

@@ -43,8 +43,8 @@ export class Login {
     const request: LoginRequest = this.form.getRawValue();
     this.saving.set(true);
     this.api.login(request).pipe(finalize(() => this.saving.set(false))).subscribe({
-      next: (user) => {
-        this.session.start(user);
+      next: (session) => {
+        this.session.start(session);
         this.router.navigateByUrl(LINKS.list);
       },
       error: (err: HttpErrorResponse) => {

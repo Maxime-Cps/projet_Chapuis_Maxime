@@ -2,7 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+import { finalize, switchMap } from 'rxjs';
+import { UserApi } from '../../services/user-api';
 import { AuthApi } from '../../services/auth-api';
 import { AuthSession } from '../../services/auth-session';
 import { SignUpRequest } from '../../interfaces/SignUpRequest';
@@ -18,7 +19,8 @@ const PASSWORD_MIN_LENGTH = 8;
   templateUrl: './sign-up.html',
 })
 export class SignUp {
-  private readonly api = inject(AuthApi);
+  private readonly api = inject(UserApi);
+  private readonly auth = inject(AuthApi);
   private readonly session = inject(AuthSession);
   private readonly router = inject(Router);
 
@@ -50,15 +52,23 @@ export class SignUp {
 
     const request: SignUpRequest = this.form.getRawValue();
     this.saving.set(true);
-    this.api.signUp(request).pipe(finalize(() => this.saving.set(false))).subscribe({
-      next: (user) => {
-        this.session.start(user);
-        this.router.navigateByUrl(LINKS.list);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.error.set(errorMessage(err));
-      },
-    });
+    const { email, password } = request;
+    this.api
+      .create(request)
+      .pipe(
+        // The account exists: log in to get a session token
+        switchMap(() => this.auth.login({ email, password })),
+        finalize(() => this.saving.set(false)),
+      )
+      .subscribe({
+        next: (session) => {
+          this.session.start(session);
+          this.router.navigateByUrl(LINKS.list);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.error.set(errorMessage(err));
+        },
+      });
   }
 }
 

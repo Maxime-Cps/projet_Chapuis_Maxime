@@ -8,6 +8,8 @@ export interface DatabaseConfig {
 
 export interface AppConfig {
   BDD: DatabaseConfig;
+  /** Key signing session tokens (utils/token.ts). */
+  AUTH_SECRET: string;
 }
 
 export const config: AppConfig = {
@@ -17,8 +19,9 @@ export const config: AppConfig = {
     user: process.env.DB_USER ?? "",
     password: process.env.DB_PASSWORD ?? "",
     bdname: process.env.DB_NAME ?? ""
-  }
+  },
+  AUTH_SECRET: process.env.AUTH_SECRET ?? ""
 };
 
-export const { BDD } = config;
+export const { BDD, AUTH_SECRET } = config;
 export default config;
