@@ -4,11 +4,12 @@ import db from "../models";
 import { byEmail, normalizeEmail, toPublicUser } from "../models/users.model";
 import { hashPassword } from "../utils/password";
 import { errorMessage, isText } from "../utils/request";
+import { issueSession } from "../utils/token";
 
 const Users = db.users;
 
 /**
- * Creates a user. Responds 201 with the user, 409 if the email is taken.
+ * Creates a user and signs them in. Responds 201 with the session, 409 if the email is taken.
  */
 export const create = async (req: Request, res: Response): Promise<void> => {
   const { firstName, lastName, email: rawEmail, password } = req.body ?? {};
@@ -27,7 +28,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 
     const passwordHash = await hashPassword(password);
     const user = await Users.create({ firstName, lastName, email, passwordHash });
-    res.status(201).json(toPublicUser(user));
+    res.status(201).json(issueSession(user));
   } catch (err: unknown) {
     // Concurrent creation with the same email
     if (err instanceof UniqueConstraintError) {

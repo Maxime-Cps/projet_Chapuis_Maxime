@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { AUTH_SECRET } from "../config";
+import { PublicUser, toPublicUser, UserInstance } from "../models/users.model";
 
 if (!AUTH_SECRET) {
   throw new Error("Missing AUTH_SECRET environment variable (see .env.example).");
@@ -20,6 +21,17 @@ function sign(payload: string): string {
 export function issueToken(userId: number, now = Date.now()): string {
   const payload = `${userId}.${now + TOKEN_TTL_MS}`;
   return `${payload}.${sign(payload)}`;
+}
+
+/** Signed-in user and its token, as sent to clients by login and sign-up. */
+export interface Session {
+  user: PublicUser;
+  token: string;
+}
+
+/** Session for a user who just proved who they are (login or account creation). */
+export function issueSession(user: UserInstance, now = Date.now()): Session {
+  return { user: toPublicUser(user), token: issueToken(user.id, now) };
 }
 
 /** User id carried by a token, or null when it is forged, malformed or expired. */

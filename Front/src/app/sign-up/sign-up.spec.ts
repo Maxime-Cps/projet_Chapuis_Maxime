@@ -4,7 +4,6 @@ import { provideRouter, Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { SignUp } from './sign-up';
 import { UserApi } from '../../services/user-api';
-import { AuthApi } from '../../services/auth-api';
 import { AuthSession } from '../../services/auth-session';
 import { User } from '../../interfaces/User';
 import { Session } from '../../interfaces/Session';
@@ -17,19 +16,16 @@ describe('SignUp', () => {
   let component: SignUp;
   let fixture: ComponentFixture<SignUp>;
   let api: { create: ReturnType<typeof vi.fn> };
-  let auth: { login: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     sessionStorage.clear();
     api = { create: vi.fn() };
-    auth = { login: vi.fn().mockReturnValue(of(SESSION)) };
 
     await TestBed.configureTestingModule({
       imports: [SignUp],
       providers: [
         provideRouter(routes),
         { provide: UserApi, useValue: api },
-        { provide: AuthApi, useValue: auth },
       ],
     }).compileComponents();
 
@@ -54,7 +50,7 @@ describe('SignUp', () => {
   });
 
   it('should disable the submit button while the request is pending', async () => {
-    api.create.mockReturnValue(new Subject<User>());
+    api.create.mockReturnValue(new Subject<Session>());
     fillForm();
 
     component.onSubmit();
@@ -65,7 +61,7 @@ describe('SignUp', () => {
   });
 
   it('should open the pollution list once the account is created', async () => {
-    api.create.mockReturnValue(of(USER));
+    api.create.mockReturnValue(of(SESSION));
     fillForm();
 
     component.onSubmit();
@@ -74,13 +70,12 @@ describe('SignUp', () => {
     expect(TestBed.inject(Router).url).toBe('/pollutions');
   });
 
-  it('should log the created user in with the submitted credentials', async () => {
-    api.create.mockReturnValue(of(USER));
+  it('should start the session returned by account creation', async () => {
+    api.create.mockReturnValue(of(SESSION));
     fillForm();
 
     component.onSubmit();
 
-    expect(auth.login).toHaveBeenCalledWith({ email: 'ada@example.com', password: 'secret123' });
     expect(TestBed.inject(AuthSession).token()).toBe(SESSION.token);
   });
 

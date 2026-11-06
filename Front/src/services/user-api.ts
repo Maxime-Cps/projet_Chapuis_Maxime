@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { SignUpRequest } from '../interfaces/SignUpRequest';
 import { User } from '../interfaces/User';
+import { Session } from '../interfaces/Session';
 
 /** Client for the users API. */
 @Service()
@@ -16,7 +17,8 @@ export class UserApi {
     return this.http.get<User[]>(UserApi.URL);
   }
 
-  create(request: SignUpRequest): Observable<User> {
-    return this.http.post<User>(UserApi.URL, request);
+  /** Creates the account and returns its session, already signed in. */
+  create(request: SignUpRequest): Observable<Session> {
+    return this.http.post<Session>(UserApi.URL, request);
   }
 }

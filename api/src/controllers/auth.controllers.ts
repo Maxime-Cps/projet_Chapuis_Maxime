@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import db from "../models";
-import { byEmail, toPublicUser } from "../models/users.model";
-import { verifyPassword } from "../utils/password";
-import { issueToken } from "../utils/token";
+import { byEmail } from "../models/users.model";
+import { findByPassword } from "../utils/password";
+import { issueSession } from "../utils/token";
 import { errorMessage, isText } from "../utils/request";
 
 const Users = db.users;
@@ -18,13 +18,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    const user = await Users.findOne({ where: byEmail(email) });
-    if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    const accounts = await Users.findAll({ where: byEmail(email), order: [["id", "ASC"]] });
+    const user = await findByPassword(accounts, password);
+    if (!user) {
       res.status(401).json({ message: "Invalid email or password." });
       return;
     }
 
-    res.status(200).json({ user: toPublicUser(user), token: issueToken(user.id) });
+    res.status(200).json(issueSession(user));
   } catch (err: unknown) {
     res.status(500).json({ message: "Failed to log in: " + errorMessage(err) });
   }

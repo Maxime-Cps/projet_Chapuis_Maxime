@@ -4,6 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { UserApi } from './user-api';
 import { SignUpRequest } from '../interfaces/SignUpRequest';
 import { User } from '../interfaces/User';
+import { Session } from '../interfaces/Session';
 
 describe('UserApi', () => {
   const USER: User = { id: 1, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' };
@@ -33,22 +34,23 @@ describe('UserApi', () => {
     expect(result).toEqual([USER]);
   });
 
-  it('should POST the new user and return it', () => {
+  it('should POST the new user and return its session', () => {
     const request: SignUpRequest = {
       firstName: 'Ada',
       lastName: 'Lovelace',
       email: 'ada@example.com',
       password: 'secret123',
     };
-    let result: User | undefined;
+    const session: Session = { user: USER, token: 'signed-token' };
+    let result: Session | undefined;
 
-    service.create(request).subscribe((user) => (result = user));
+    service.create(request).subscribe((created) => (result = created));
 
     const req = http.expectOne(UserApi.URL);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(request);
-    req.flush(USER);
+    req.flush(session);
 
-    expect(result).toEqual(USER);
+    expect(result).toEqual(session);
   });
 });
