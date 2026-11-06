@@ -1,16 +1,24 @@
 import { Sequelize, DataTypes, Model, Optional, ModelStatic } from "sequelize";
 
+export interface PollutionType {
+  id: number;
+  name: string;
+}
+
 export interface PollutionAttributes {
   id: number;
-  ville: string;
-  valeur: number;
-  polluant: string;
+  label: string;
+  type: PollutionType;
+  description: string;
   date: string;
-  description?: string | null;
+  place: string;
+  latitude: string;
+  longitude: string;
+  image: string;
 }
 
 export interface PollutionCreationAttributes
-  extends Optional<PollutionAttributes, "id" | "description"> {}
+  extends Optional<PollutionAttributes, "id"> {}
 
 export interface PollutionInstance
   extends Model<PollutionAttributes, PollutionCreationAttributes>,
@@ -31,29 +39,43 @@ export default function definePollutions(
         primaryKey: true,
         allowNull: false
       },
-      ville: {
+      label: {
         type: DataTypes.STRING,
         allowNull: false
       },
-      valeur: {
-        type: DataTypes.FLOAT,
+      type: {
+        type: DataTypes.JSONB,
         allowNull: false
       },
-      polluant: {
-        type: DataTypes.STRING,
+      description: {
+        type: DataTypes.TEXT,
         allowNull: false
       },
       date: {
         type: DataTypes.STRING,
         allowNull: false
       },
-      description: {
+      place: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: false
+      },
+      latitude: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      longitude: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      image: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        defaultValue: ""
       }
     },
     {
-      tableName: "pollution",
+      // New table: the legacy "pollution" table has an incompatible schema
+      tableName: "pollutions",
       freezeTableName: true,
       timestamps: false
     }
@@ -61,4 +83,3 @@ export default function definePollutions(
 
   return Pollutions;
 }
-
