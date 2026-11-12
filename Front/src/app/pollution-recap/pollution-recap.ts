@@ -2,9 +2,11 @@ import {Component, EventEmitter, Input, Output, signal} from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {NewPollution} from '../../interfaces/Pollution';
 import {Icon} from '../icon/icon';
+import {PollutionLevelPipe} from '../../pipes/pollution-level-pipe';
+import {HighlightPollutionDirective} from '../../directives/highlight-pollution-directive';
 
 @Component({
-  imports: [DatePipe, Icon],
+  imports: [DatePipe, Icon, PollutionLevelPipe, HighlightPollutionDirective],
   selector: 'app-pollution-recap',
   styleUrl: './pollution-recap.scss',
   templateUrl: './pollution-recap.html',

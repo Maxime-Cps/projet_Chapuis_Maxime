@@ -211,6 +211,23 @@
   border-radius: var(--radius);
 }
 
+// Badge du niveau de pollution : fond posé par HighlightPollutionDirective
+.level {
+  padding: 0.25rem 0.5rem;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--on-accent);
+  border-radius: var(--radius);
+}
+
+// Badges type et niveau côte à côte
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-self: flex-start;
+}
+
 // Fiche d'un signalement (récapitulatif, détail)
 .photo {
   display: block;
@@ -261,6 +278,13 @@
     text-align: right;
     overflow-wrap: anywhere;
   }
+}
+
+// Ligne « Dangerosité » : badge puis indice
+.fact-level dd {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .actions {

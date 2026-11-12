@@ -35,6 +35,15 @@
           <dt>Lieu</dt>
           <dd>{{ pollution.place }}</dd>
         </div>
+        <div class="fact fact-level">
+          <dt>Dangerosité</dt>
+          <dd>
+            <span class="level" [appHighlightPollution]="pollution.dangerLevel">
+              {{ pollution.dangerLevel | pollutionLevel }}
+            </span>
+            <span class="mono">{{ pollution.dangerLevel }}</span>
+          </dd>
+        </div>
         <div class="fact">
           <dt>Coordonnées</dt>
           <dd class="mono">{{ pollution.latitude }}, {{ pollution.longitude }}</dd>

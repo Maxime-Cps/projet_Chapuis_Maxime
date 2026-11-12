@@ -27,6 +27,15 @@
     <dt>Lieu</dt>
     <dd>{{ data?.place }}</dd>
   </div>
+  <div class="fact fact-level">
+    <dt>Dangerosité</dt>
+    <dd>
+      <span class="level" [appHighlightPollution]="data?.dangerLevel">
+        {{ data?.dangerLevel | pollutionLevel }}
+      </span>
+      <span class="mono">{{ data?.dangerLevel }}</span>
+    </dd>
+  </div>
   <div class="fact fact-coords">
     <dt>Coordonnées</dt>
     <dd>

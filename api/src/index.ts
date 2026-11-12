@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from "express";
 import cors, { CorsOptions } from "cors";
 import db from "./models";
+import { addDangerLevel } from "./models/pollutions.model";
 import initRoutes from "./routes";
 
 const app: Application = express();
@@ -31,15 +32,16 @@ app.get("/health", (_req: Request, res: Response) => {
 
 db.sequelize
   .sync()
+  .then(() => addDangerLevel(db.pollutions))
   .then(async () => {
     console.log("Synced db.");
     try {
       const count = await db.pollutions.count();
       if (count === 0) {
         await db.pollutions.bulkCreate([
-          { label: "Bouteilles sur la berge", type: { id: 0, name: "Plastique" }, description: "Une vingtaine de bouteilles plastiques accumulées sous le pont.", date: "2026-09-12T09:30", place: "Quai de la Seine, Paris", latitude: "48.8530", longitude: "2.3499", image: "" },
-          { label: "Fumée noire", type: { id: 4, name: "Air" }, description: "Fumée épaisse s'échappant d'un entrepôt.", date: "2026-10-02T18:15", place: "Zone industrielle, Compiègne", latitude: "49.4179", longitude: "2.8261", image: "" },
-          { label: "Gravats en forêt", type: { id: 2, name: "Dépôt sauvage" }, description: "Sacs de gravats et pots de peinture abandonnés au bord du chemin.", date: "2026-10-14T14:00", place: "Forêt de Chantilly", latitude: "49.1866", longitude: "2.4614", image: "" }
+          { label: "Bouteilles sur la berge", type: { id: 0, name: "Plastique" }, description: "Une vingtaine de bouteilles plastiques accumulées sous le pont.", date: "2026-09-12T09:30", place: "Quai de la Seine, Paris", latitude: "48.8530", longitude: "2.3499", image: "", dangerLevel: 15 },
+          { label: "Fumée noire", type: { id: 4, name: "Air" }, description: "Fumée épaisse s'échappant d'un entrepôt.", date: "2026-10-02T18:15", place: "Zone industrielle, Compiègne", latitude: "49.4179", longitude: "2.8261", image: "", dangerLevel: 80 },
+          { label: "Gravats en forêt", type: { id: 2, name: "Dépôt sauvage" }, description: "Sacs de gravats et pots de peinture abandonnés au bord du chemin.", date: "2026-10-14T14:00", place: "Forêt de Chantilly", latitude: "49.1866", longitude: "2.4614", image: "", dangerLevel: 45 }
         ]);
         console.log("Jeu de données initial pour la table pollution inséré avec succès.");
       }

@@ -24,6 +24,10 @@ Jetons dans `Front/src/styles.scss` (`:root`). Aucune couleur écrite en dur ail
 | Neutre : texte doux | `--text-soft` | `#d9d0c4` |
 | Neutre : texte discret | `--muted` | `#b6aa99` |
 | Erreur | `--error` | `#ff8a7a` |
+| Niveau : faible (vert clair) | `--level-low` | `#a8dc90` |
+| Niveau : modérée (jaune) | `--level-moderate` | `#f2d84b` |
+| Niveau : élevée (orange) | `--level-high` | `#ff9440` |
+| Niveau : dangereuse (rouge) | `--level-dangerous` | `#ff6b5b` |
 
 Carte (illustration uniquement) : `--land`, `--park`, `--water`, `--road`, `--street`, `--building`.
 

@@ -16,6 +16,7 @@ describe('PollutionApi', () => {
     latitude: '45.76',
     longitude: '4.83',
     image: '',
+    dangerLevel: 30,
   };
 
   let service: PollutionApi;
