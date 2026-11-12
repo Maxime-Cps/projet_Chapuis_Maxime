@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router } from '@angular/router';
 import { App } from './app';
 import { routes } from './app.routes';
-import { mockPollutionInterceptor } from '../services/mock-pollution.interceptor';
 import { AuthSession } from '../services/auth-session';
 import { User } from '../interfaces/User';
 
@@ -15,7 +15,8 @@ describe('App', () => {
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
-        provideHttpClient(withInterceptors([mockPollutionInterceptor])),
+        provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter(routes),
       ],
     })
@@ -29,7 +30,7 @@ describe('App', () => {
   });
 
   it('should redirect an unknown URL to the pollution form when signed in', async () => {
-    TestBed.inject(AuthSession).start(USER);
+    TestBed.inject(AuthSession).start({ user: USER, token: 'signed-token' });
     const router = TestBed.inject(Router);
 
     await router.navigateByUrl('/pollutionForm');
@@ -46,7 +47,7 @@ describe('App', () => {
   });
 
   it('should keep a signed-in user away from the login page', async () => {
-    TestBed.inject(AuthSession).start(USER);
+    TestBed.inject(AuthSession).start({ user: USER, token: 'signed-token' });
     const router = TestBed.inject(Router);
 
     await router.navigateByUrl('/login');

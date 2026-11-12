@@ -1,4 +1,4 @@
-import { Sequelize, DataTypes, Model, Optional, ModelStatic } from "sequelize";
+import { Sequelize, DataTypes, Model, Optional, ModelStatic, WhereOptions, col, fn, where } from "sequelize";
 
 export interface UserAttributes {
   id: number;
@@ -16,6 +16,24 @@ export interface UserInstance
     UserAttributes {}
 
 export type UserModel = ModelStatic<UserInstance>;
+
+/** User as sent to clients: everything but the password hash. */
+export type PublicUser = Omit<UserAttributes, "passwordHash">;
+
+/** Canonical form of an email, so case and spaces never split one account in two. */
+export function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+/** Case-insensitive match on email, covering accounts stored before normalization. */
+export function byEmail(email: string): WhereOptions<UserAttributes> {
+  return where(fn("lower", col("email")), normalizeEmail(email));
+}
+
+/** Strips the password hash before a user leaves the API. */
+export function toPublicUser({ id, firstName, lastName, email }: UserInstance): PublicUser {
+  return { id, firstName, lastName, email };
+}
 
 export default function defineUsers(sequelize: Sequelize): UserModel {
   return sequelize.define<UserInstance>(

@@ -28,3 +28,20 @@ export async function verifyPassword(password: string, stored: string): Promise<
   const actual = await scryptAsync(password, salt, KEY_LENGTH);
   return timingSafeEqual(expected, actual);
 }
+
+/**
+ * First account whose password matches, or null.
+ * Several accounts can share an email up to case when stored before normalization.
+ */
+export async function findByPassword<T extends { passwordHash: string }>(
+  accounts: T[],
+  password: string
+): Promise<T | null> {
+  for (const account of accounts) {
+    if (await verifyPassword(password, account.passwordHash)) {
+      return account;
+    }
+  }
+
+  return null;
+}

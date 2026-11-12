@@ -3,25 +3,30 @@ import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { provideRouter, Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { SignUp } from './sign-up';
-import { AuthApi } from '../../services/auth-api';
+import { UserApi } from '../../services/user-api';
 import { AuthSession } from '../../services/auth-session';
 import { User } from '../../interfaces/User';
+import { Session } from '../../interfaces/Session';
 import { routes } from '../app.routes';
 
 describe('SignUp', () => {
   const USER: User = { id: 7, firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' };
+  const SESSION: Session = { user: USER, token: 'signed-token' };
 
   let component: SignUp;
   let fixture: ComponentFixture<SignUp>;
-  let api: { signUp: ReturnType<typeof vi.fn> };
+  let api: { create: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     sessionStorage.clear();
-    api = { signUp: vi.fn() };
+    api = { create: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [SignUp],
-      providers: [provideRouter(routes), { provide: AuthApi, useValue: api }],
+      providers: [
+        provideRouter(routes),
+        { provide: UserApi, useValue: api },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SignUp);
@@ -41,11 +46,11 @@ describe('SignUp', () => {
   it('should not call the API when the form is invalid', () => {
     component.onSubmit();
 
-    expect(api.signUp).not.toHaveBeenCalled();
+    expect(api.create).not.toHaveBeenCalled();
   });
 
   it('should disable the submit button while the request is pending', async () => {
-    api.signUp.mockReturnValue(new Subject<User>());
+    api.create.mockReturnValue(new Subject<Session>());
     fillForm();
 
     component.onSubmit();
@@ -56,7 +61,7 @@ describe('SignUp', () => {
   });
 
   it('should open the pollution list once the account is created', async () => {
-    api.signUp.mockReturnValue(of(USER));
+    api.create.mockReturnValue(of(SESSION));
     fillForm();
 
     component.onSubmit();
@@ -65,17 +70,17 @@ describe('SignUp', () => {
     expect(TestBed.inject(Router).url).toBe('/pollutions');
   });
 
-  it('should sign the created user in', async () => {
-    api.signUp.mockReturnValue(of(USER));
+  it('should start the session returned by account creation', async () => {
+    api.create.mockReturnValue(of(SESSION));
     fillForm();
 
     component.onSubmit();
 
-    expect(TestBed.inject(AuthSession).user()).toEqual(USER);
+    expect(TestBed.inject(AuthSession).token()).toBe(SESSION.token);
   });
 
   it('should display an error when the email is taken', async () => {
-    api.signUp.mockReturnValue(
+    api.create.mockReturnValue(
       throwError(() => new HttpErrorResponse({ status: HttpStatusCode.Conflict })),
     );
     fillForm();

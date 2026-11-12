@@ -1,0 +1,39 @@
+<main class="page">
+  <section class="panel">
+    <nav class="panel-links">
+      <a class="back" [routerLink]="links.list"><app-icon name="arrow-left" />Tous les signalements</a>
+      <app-sign-out />
+    </nav>
+
+    <header class="panel-head">
+      <h1>Utilisateurs</h1>
+      <p class="lead">Comptes inscrits sur le site.</p>
+    </header>
+
+    @if (error(); as error) {
+      <p id="users-error" class="error" role="alert">{{ error }}</p>
+    }
+
+    @if (loading()) {
+      <p id="users-loading" class="loading" role="status">Chargement des utilisateurs…</p>
+    } @else if (!error()) {
+      <p class="count" aria-live="polite">{{ users().length }} utilisateur(s)</p>
+
+      <ul class="list">
+        @for (user of users(); track user.id) {
+          <li class="item">
+            <span class="item-label">
+              {{ user.firstName }} {{ user.lastName }}
+              @if (user.id === currentUser()?.id) {
+                <span class="type">Vous</span>
+              }
+            </span>
+            <span class="item-meta mono">{{ user.email }}</span>
+          </li>
+        } @empty {
+          <li class="empty">Aucun utilisateur inscrit.</li>
+        }
+      </ul>
+    }
+  </section>
+</main>
