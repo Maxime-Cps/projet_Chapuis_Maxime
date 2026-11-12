@@ -26,8 +26,12 @@ export const getAll = async (_req: Request, res: Response): Promise<void> => {
  * Récupère une mesure de pollution par son identifiant.
  */
 export const getById = async (req: Request, res: Response): Promise<void> => {
-  const paramId = req.params.id;
-  const id = Array.isArray(paramId) ? Number(paramId[0]) : Number(paramId);
+  const id = readId(req);
+  if (id === null) {
+    res.status(404).json({ message: `Aucune pollution trouvée avec l'id=${req.params.id}.` });
+    return;
+  }
+
   try {
     const data = await Pollutions.findByPk(id);
     if (data) {
