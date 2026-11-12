@@ -1,0 +1,10 @@
+import { Pipe, PipeTransform } from '@angular/core';
+import { PollutionLevel, toPollutionLevel } from '../interfaces/PollutionLevel';
+
+/** Turns a danger index into its status, e.g. `{{ 35 | pollutionLevel }}` -> "Modérée". */
+@Pipe({ name: 'pollutionLevel' })
+export class PollutionLevelPipe implements PipeTransform {
+  transform(index: number | null | undefined): PollutionLevel {
+    return toPollutionLevel(index);
+  }
+}

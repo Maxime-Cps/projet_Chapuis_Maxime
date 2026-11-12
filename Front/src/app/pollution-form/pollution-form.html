@@ -111,6 +111,23 @@
           <textarea id="pollutionDescription" formControlName="description" rows="3" aria-required="true"></textarea>
         </div>
 
+        <div class="field">
+          <label for="pollutionDangerLevel">Indice de dangerosité <span class="req" aria-hidden="true">*</span></label>
+          <input
+            id="pollutionDangerLevel"
+            class="mono"
+            formControlName="dangerLevel"
+            aria-required="true"
+            type="number"
+            min="0"
+            step="1"
+            aria-describedby="danger-level-hint"
+          />
+          @if (form.controls['dangerLevel'].touched && form.controls['dangerLevel'].errors?.['pattern']) {
+            <small id="danger-level-hint" class="hint error" role="alert">Nombre entier, 0 ou plus.</small>
+          }
+        </div>
+
         <div class="row">
           <div class="field">
             <label for="pollutionDate">Observée le <span class="req" aria-hidden="true">*</span></label>

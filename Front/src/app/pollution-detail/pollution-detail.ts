@@ -10,9 +10,11 @@ import { ID_PARAM, LINKS } from '../../constants/routes';
 import { deleteConfirmation, POLLUTION_ERRORS } from '../../constants/messages';
 import { Icon } from '../icon/icon';
 import { SignOut } from '../sign-out/sign-out';
+import { PollutionLevelPipe } from '../../pipes/pollution-level-pipe';
+import { HighlightPollutionDirective } from '../../directives/highlight-pollution-directive';
 
 @Component({
-  imports: [DatePipe, RouterLink, MapBackdrop, Icon, SignOut],
+  imports: [DatePipe, RouterLink, MapBackdrop, Icon, SignOut, PollutionLevelPipe, HighlightPollutionDirective],
   selector: 'app-pollution-detail',
   styleUrl: './pollution-detail.scss',
   templateUrl: './pollution-detail.html',

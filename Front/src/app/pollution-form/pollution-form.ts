@@ -18,6 +18,9 @@ import {POLLUTION_ERRORS} from '../../constants/messages';
 import {Icon} from '../icon/icon';
 import {SignOut} from '../sign-out/sign-out';
 
+/** Integer, 0 or more (e.g. 42), as the API expects for the danger level. */
+const WHOLE_NUMBER = /^\d+$/;
+
 @Component({
   imports: [
     ReactiveFormsModule,
@@ -57,6 +60,7 @@ export class PollutionForm {
     latitude: new FormControl<number | null>(null, [Validators.required, Validators.min(-90), Validators.max(90)]),
     longitude: new FormControl<number | null>(null, [Validators.required, Validators.min(-180), Validators.max(180)]),
     image: new FormControl(""),
+    dangerLevel: new FormControl<number | null>(null, [Validators.required, Validators.pattern(WHOLE_NUMBER)]),
   })
 
   constructor() {

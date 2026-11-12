@@ -41,6 +41,7 @@ describe('PollutionForm', () => {
       latitude: 48.85,
       longitude: 2.34,
       image: '',
+      dangerLevel: 42,
     });
 
     component.onSubmit();
@@ -84,6 +85,26 @@ describe('PollutionForm', () => {
       const hint = fixture.nativeElement.querySelector('#date-hint') as HTMLElement | null;
 
       expect(hint?.textContent).toContain('futur');
+    });
+  });
+
+  describe('with a decimal danger level', () => {
+    beforeEach(async () => {
+      const dangerLevel = component.form.controls['dangerLevel'];
+      dangerLevel.setValue(12.5);
+      dangerLevel.markAsTouched();
+      fixture.detectChanges();
+      await fixture.whenStable();
+    });
+
+    it('should invalidate the danger level', () => {
+      expect(component.form.controls['dangerLevel'].hasError('pattern')).toBe(true);
+    });
+
+    it('should show an error under the danger level field', () => {
+      const hint = fixture.nativeElement.querySelector('#danger-level-hint') as HTMLElement | null;
+
+      expect(hint?.textContent).toContain('entier');
     });
   });
 });

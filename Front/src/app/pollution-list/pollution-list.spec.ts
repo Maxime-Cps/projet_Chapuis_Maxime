@@ -18,6 +18,7 @@ describe('PollutionList', () => {
     latitude: '48.85',
     longitude: '2.34',
     image: '',
+    dangerLevel: 10,
   };
   const PLASTIC: Pollution = {
     ...BASE,
@@ -26,7 +27,7 @@ describe('PollutionList', () => {
     type: POLLUTION_TYPES[0],
     image: 'https://example.com/bouteilles.jpg',
   };
-  const AIR: Pollution = { ...BASE, id: 2, label: 'Fumée', type: POLLUTION_TYPES[4] };
+  const AIR: Pollution = { ...BASE, id: 2, label: 'Fumée', type: POLLUTION_TYPES[4], dangerLevel: 80 };
 
   let fixture: ComponentFixture<PollutionList>;
   let component: PollutionList;
@@ -72,6 +73,13 @@ describe('PollutionList', () => {
 
   it('should display every pollution', () => {
     expect(labels()).toEqual(['Bouteilles', 'Fumée']);
+  });
+
+  it('should show the level of each pollution, colored by danger', () => {
+    const badges = Array.from(fixture.nativeElement.querySelectorAll('.level') as NodeListOf<HTMLElement>);
+
+    expect(badges.map((badge) => badge.textContent!.trim())).toEqual(['Faible', 'Élevée']);
+    expect(badges.map((badge) => badge.style.backgroundColor)).toEqual(['var(--level-low)', 'var(--level-high)']);
   });
 
   it('should link the report button to the pollution form', async () => {

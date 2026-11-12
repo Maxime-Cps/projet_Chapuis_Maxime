@@ -10,6 +10,8 @@ export interface Pollution {
   latitude: string;
   longitude: string;
   image: string;
+  /** Danger index, 0 or more: the higher, the more dangerous. */
+  dangerLevel: number;
 }
 
 /** A pollution not saved yet: the API assigns its id. */
