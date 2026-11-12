@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthApi } from './auth-api';
 import { LoginRequest } from '../interfaces/LoginRequest';
@@ -35,5 +35,18 @@ describe('AuthApi', () => {
     req.flush(session);
 
     expect(result).toEqual(session);
+  });
+
+  it('should fail when the response is not a session', () => {
+    let error: unknown;
+
+    service.login({ email: 'ada@example.com', password: 'secret123' }).subscribe({
+      error: (err) => (error = err),
+    });
+
+    // A static host without the /api proxy answers 200 with an empty body
+    http.expectOne(AuthApi.LOGIN_URL).flush(null);
+
+    expect(error).toBeInstanceOf(HttpErrorResponse);
   });
 });

@@ -1,5 +1,6 @@
 import { computed, Service, signal } from '@angular/core';
 import { Session } from '../interfaces/Session';
+import { isSession } from './session-response';
 
 const STORAGE_KEY = 'auth.session';
 
@@ -33,9 +34,8 @@ function readStoredSession(): Session | null {
   }
 
   try {
-    const session = JSON.parse(stored) as Partial<Session> | null;
-    const valid = typeof session?.token === 'string' && typeof session.user?.email === 'string';
-    return valid ? (session as Session) : null;
+    const session: unknown = JSON.parse(stored);
+    return isSession(session) ? session : null;
   } catch {
     return null;
   }

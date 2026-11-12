@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { UserApi } from './user-api';
 import { SignUpRequest } from '../interfaces/SignUpRequest';
@@ -52,5 +52,18 @@ describe('UserApi', () => {
     req.flush(session);
 
     expect(result).toEqual(session);
+  });
+
+  it('should fail when the creation response is not a session', () => {
+    let error: unknown;
+
+    service
+      .create({ firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com', password: 'secret123' })
+      .subscribe({ error: (err) => (error = err) });
+
+    // A static host without the /api proxy answers 200 with an empty body
+    http.expectOne(UserApi.URL).flush(null);
+
+    expect(error).toBeInstanceOf(HttpErrorResponse);
   });
 });
