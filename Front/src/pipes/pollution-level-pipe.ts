@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { PollutionLevel, toPollutionLevel } from '../interfaces/PollutionLevel';
+import { PollutionLevel } from '../interfaces/PollutionLevel';
+import { toPollutionLevel } from '../utils/pollution-level';
 
 /** Turns a danger index into its status, e.g. `{{ 35 | pollutionLevel }}` -> "Modérée". */
 @Pipe({ name: 'pollutionLevel' })

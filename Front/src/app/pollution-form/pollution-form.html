@@ -111,6 +111,8 @@
           <textarea id="pollutionDescription" formControlName="description" rows="3" aria-required="true"></textarea>
         </div>
 
+        @let dangerLevel = form.controls['dangerLevel'];
+        @let dangerLevelError = dangerLevel.touched && (dangerLevel.errors?.['pattern'] || dangerLevel.errors?.['max']);
         <div class="field">
           <label for="pollutionDangerLevel">Indice de dangerosité <span class="req" aria-hidden="true">*</span></label>
           <input
@@ -121,10 +123,10 @@
             type="number"
             min="0"
             step="1"
-            aria-describedby="danger-level-hint"
+            [attr.aria-describedby]="dangerLevelError ? 'danger-level-hint' : null"
           />
-          @if (form.controls['dangerLevel'].touched && form.controls['dangerLevel'].errors?.['pattern']) {
-            <small id="danger-level-hint" class="hint error" role="alert">Nombre entier, 0 ou plus.</small>
+          @if (dangerLevelError) {
+            <small id="danger-level-hint" class="hint error" role="alert">Nombre entier, de 0 à {{ maxDangerLevel }}.</small>
           }
         </div>
 

@@ -15,16 +15,15 @@ export interface PollutionAttributes {
   latitude: string;
   longitude: string;
   image: string;
-  /** Danger index, 0 or more: the higher, the more dangerous. */
-  dangerLevel: number;
+  /** Danger index, 0 or more: the higher, the more dangerous. Null when unknown. */
+  dangerLevel: number | null;
 }
 
 const DANGER_LEVEL_FIELD = "dangerLevel";
 
 const DANGER_LEVEL_COLUMN = {
   type: DataTypes.INTEGER,
-  allowNull: false,
-  defaultValue: 0
+  allowNull: true
 };
 
 export interface PollutionCreationAttributes
@@ -38,7 +37,7 @@ export type PollutionModel = ModelStatic<PollutionInstance>;
 
 /**
  * Adds the danger level column to a table created before it existed,
- * since sync() never alters existing tables. Existing rows get 0.
+ * since sync() never alters existing tables. Existing rows get null (unknown).
  */
 export async function addDangerLevel(model: PollutionModel): Promise<void> {
   const queryInterface = model.sequelize!.getQueryInterface();

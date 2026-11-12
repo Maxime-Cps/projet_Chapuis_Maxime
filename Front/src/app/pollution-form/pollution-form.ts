@@ -17,6 +17,7 @@ import {ID_PARAM, LINKS} from '../../constants/routes';
 import {POLLUTION_ERRORS} from '../../constants/messages';
 import {Icon} from '../icon/icon';
 import {SignOut} from '../sign-out/sign-out';
+import {MAX_DANGER_LEVEL} from '../../utils/pollution-level';
 
 /** Integer, 0 or more (e.g. 42), as the API expects for the danger level. */
 const WHOLE_NUMBER = /^\d+$/;
@@ -50,6 +51,7 @@ export class PollutionForm {
   readonly saving = signal(false);
 
   readonly pollutionTypeList = POLLUTION_TYPES;
+  readonly maxDangerLevel = MAX_DANGER_LEVEL;
 
   readonly form : FormGroup = new FormGroup({
     label: new FormControl("", [Validators.required]),
@@ -60,7 +62,11 @@ export class PollutionForm {
     latitude: new FormControl<number | null>(null, [Validators.required, Validators.min(-90), Validators.max(90)]),
     longitude: new FormControl<number | null>(null, [Validators.required, Validators.min(-180), Validators.max(180)]),
     image: new FormControl(""),
-    dangerLevel: new FormControl<number | null>(null, [Validators.required, Validators.pattern(WHOLE_NUMBER)]),
+    dangerLevel: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.pattern(WHOLE_NUMBER),
+      Validators.max(MAX_DANGER_LEVEL),
+    ]),
   })
 
   constructor() {

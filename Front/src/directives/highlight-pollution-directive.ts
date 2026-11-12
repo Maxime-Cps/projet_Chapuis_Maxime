@@ -1,5 +1,6 @@
 import { computed, Directive, input } from '@angular/core';
-import { PollutionLevel, toPollutionLevel } from '../interfaces/PollutionLevel';
+import { PollutionLevel } from '../interfaces/PollutionLevel';
+import { toPollutionLevel } from '../utils/pollution-level';
 
 /** Background of each level, from the design tokens. */
 const LEVEL_COLORS: Record<PollutionLevel, string> = {
