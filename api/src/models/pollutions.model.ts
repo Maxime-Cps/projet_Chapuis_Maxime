@@ -15,7 +15,17 @@ export interface PollutionAttributes {
   latitude: string;
   longitude: string;
   image: string;
+  /** Danger index, 0 or more: the higher, the more dangerous. */
+  dangerLevel: number;
 }
+
+const DANGER_LEVEL_FIELD = "dangerLevel";
+
+const DANGER_LEVEL_COLUMN = {
+  type: DataTypes.INTEGER,
+  allowNull: false,
+  defaultValue: 0
+};
 
 export interface PollutionCreationAttributes
   extends Optional<PollutionAttributes, "id"> {}
@@ -25,6 +35,22 @@ export interface PollutionInstance
     PollutionAttributes {}
 
 export type PollutionModel = ModelStatic<PollutionInstance>;
+
+/**
+ * Adds the danger level column to a table created before it existed,
+ * since sync() never alters existing tables. Existing rows get 0.
+ */
+export async function addDangerLevel(model: PollutionModel): Promise<void> {
+  const queryInterface = model.sequelize!.getQueryInterface();
+  const table = model.getTableName();
+
+  const columns = await queryInterface.describeTable(table);
+  if (DANGER_LEVEL_FIELD in columns) {
+    return;
+  }
+
+  await queryInterface.addColumn(table, DANGER_LEVEL_FIELD, DANGER_LEVEL_COLUMN);
+}
 
 export default function definePollutions(
   sequelize: Sequelize,
@@ -71,7 +97,8 @@ export default function definePollutions(
         type: DataTypes.TEXT,
         allowNull: false,
         defaultValue: ""
-      }
+      },
+      dangerLevel: DANGER_LEVEL_COLUMN
     },
     {
       // New table: the legacy "pollution" table has an incompatible schema
