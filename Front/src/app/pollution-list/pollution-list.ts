@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize, map } from 'rxjs';
 import { PollutionApi } from '../../services/pollution-api';
 import { ListViewPreference } from '../../services/list-view-preference';
@@ -16,9 +16,19 @@ import { Icon } from '../icon/icon';
 import { SignOut } from '../sign-out/sign-out';
 import { PollutionLevelPipe } from '../../pipes/pollution-level-pipe';
 import { HighlightPollutionDirective } from '../../directives/highlight-pollution-directive';
+import { PollutionMap } from '../pollution-map/pollution-map';
 
 @Component({
-  imports: [ReactiveFormsModule, RouterLink, DatePipe, Icon, SignOut, PollutionLevelPipe, HighlightPollutionDirective],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    DatePipe,
+    Icon,
+    SignOut,
+    PollutionLevelPipe,
+    HighlightPollutionDirective,
+    PollutionMap,
+  ],
   selector: 'app-pollution-list',
   styleUrl: './pollution-list.scss',
   templateUrl: './pollution-list.html',
@@ -26,6 +36,7 @@ import { HighlightPollutionDirective } from '../../directives/highlight-pollutio
 export class PollutionList {
   private readonly api = inject(PollutionApi);
   private readonly viewPreference = inject(ListViewPreference);
+  private readonly router = inject(Router);
 
   readonly links = LINKS;
   readonly types = POLLUTION_TYPES;
@@ -40,6 +51,9 @@ export class PollutionList {
 
   /** Ids of the pollutions being deleted, to disable their buttons meanwhile. */
   readonly deletingIds = signal<ReadonlySet<number>>(new Set());
+
+  /** Id of the report hovered or focused, in the list or on the map. */
+  readonly highlightedId = signal<number | null>(null);
 
   readonly filterForm = new FormGroup({
     text: new FormControl('', { nonNullable: true }),
@@ -85,6 +99,10 @@ export class PollutionList {
 
   resetFilters() {
     this.filterForm.reset();
+  }
+
+  openDetail(id: number) {
+    this.router.navigateByUrl(LINKS.detail(id));
   }
 
   private toggleDeleting(id: number) {

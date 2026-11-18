@@ -1,0 +1,16 @@
+@use '../../styles/map-shell';
+
+@include map-shell.host;
+
+.notice {
+  @include map-shell.notice;
+
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: var(--muted);
+  text-align: center;
+}

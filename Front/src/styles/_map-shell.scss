@@ -1,0 +1,20 @@
+// Box of a map component: the map fills it, a notice can sit on top.
+@mixin host {
+  :host {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: var(--land);
+  }
+
+  .surface {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+// Short message laid over the map, e.g. "map unavailable".
+@mixin notice {
+  margin: 0;
+  font-size: var(--text-small);
+}

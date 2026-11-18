@@ -9,6 +9,7 @@ import { PollutionApi } from '../../services/pollution-api';
 import { Pollution } from '../../interfaces/Pollution';
 import { POLLUTION_TYPES } from '../../interfaces/PollutionType';
 import { AuthSession } from '../../services/auth-session';
+import { FakeCityMap, provideFakeMapEngine } from '../../map/testing/fake-map-engine';
 
 describe('PollutionList', () => {
   const BASE: Omit<Pollution, 'id' | 'label' | 'type'> = {
@@ -32,14 +33,20 @@ describe('PollutionList', () => {
   let fixture: ComponentFixture<PollutionList>;
   let component: PollutionList;
   let api: { getAll: ReturnType<typeof vi.fn>; delete: ReturnType<typeof vi.fn> };
+  let maps: FakeCityMap[];
 
   beforeEach(async () => {
     sessionStorage.clear();
+    maps = [];
     api = { getAll: vi.fn().mockReturnValue(of([PLASTIC, AIR])), delete: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [PollutionList],
-      providers: [provideRouter(routes), { provide: PollutionApi, useValue: api }],
+      providers: [
+        provideRouter(routes),
+        provideFakeMapEngine(maps),
+        { provide: PollutionApi, useValue: api },
+      ],
     }).compileComponents();
 
     TestBed.inject(AuthSession).start({
@@ -158,5 +165,30 @@ describe('PollutionList', () => {
     component.remove(PLASTIC);
 
     expect(api.delete).not.toHaveBeenCalled();
+  });
+
+  it('should put forward the dot of the hovered row', async () => {
+    const row = fixture.nativeElement.querySelector('.item') as HTMLElement;
+
+    row.dispatchEvent(new MouseEvent('mouseenter'));
+    await fixture.whenStable();
+
+    expect(maps[0].highlight).toHaveBeenLastCalledWith(PLASTIC.id);
+    expect(row.classList).toContain('is-highlighted');
+  });
+
+  it('should highlight the row of the hovered dot', async () => {
+    maps[0].options.onPointHover!(AIR.id);
+    await fixture.whenStable();
+
+    const highlighted = fixture.nativeElement.querySelector('.item.is-highlighted .item-label');
+    expect(highlighted.textContent.trim()).toBe(AIR.label);
+  });
+
+  it('should open the detail of a clicked dot', async () => {
+    maps[0].options.onPointClick!(AIR.id);
+    await fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe(`/pollutions/${AIR.id}`);
   });
 });

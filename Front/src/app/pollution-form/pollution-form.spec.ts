@@ -7,6 +7,7 @@ import { PollutionApi } from '../../services/pollution-api';
 import { routes } from '../app.routes';
 import { SignUp } from '../sign-up/sign-up';
 import { AuthSession } from '../../services/auth-session';
+import { PinMode } from '../../map/city-map';
 
 describe('PollutionForm', () => {
   let component: PollutionForm;
@@ -147,6 +148,46 @@ describe('PollutionForm', () => {
       const hint = fixture.nativeElement.querySelector('#danger-level-hint') as HTMLElement | null;
 
       expect(hint).not.toBeNull();
+    });
+  });
+
+  describe('location', () => {
+    it('should fill the coordinates picked on the map', () => {
+      component.pickLocation({ latitude: 48.886712, longitude: 2.375612 });
+
+      expect(component.form.controls['latitude'].value).toBe(48.886712);
+      expect(component.form.controls['longitude'].value).toBe(2.375612);
+      expect(component.form.dirty).toBe(true);
+    });
+
+    it('should place the pin at typed coordinates', () => {
+      component.form.patchValue({ latitude: 45.76, longitude: 4.83 });
+
+      expect(component.position()).toEqual({ latitude: 45.76, longitude: 4.83 });
+    });
+
+    it('should move the pin only once a coordinate field is left', async () => {
+      component.form.patchValue({ latitude: 48.85, longitude: 2.34 });
+      const latitude = fixture.nativeElement.querySelector('#pollutionLatitude') as HTMLInputElement;
+
+      latitude.value = '4';
+      latitude.dispatchEvent(new Event('input'));
+      expect(component.position()).toEqual({ latitude: 48.85, longitude: 2.34 });
+
+      latitude.dispatchEvent(new Event('blur'));
+      expect(component.position()).toEqual({ latitude: 4, longitude: 2.34 });
+    });
+
+    it('should lock the pin once the report is saved', () => {
+      component.isSubmitted.set(true);
+
+      expect(component.pinMode()).toBe(PinMode.Fixed);
+    });
+
+    it('should hide the pin while a coordinate is out of range', () => {
+      component.form.patchValue({ latitude: 95, longitude: 4.83 });
+
+      expect(component.position()).toBeNull();
     });
   });
 });

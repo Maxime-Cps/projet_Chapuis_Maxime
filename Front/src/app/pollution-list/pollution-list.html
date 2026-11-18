@@ -85,7 +85,14 @@
 
       <ul class="list" [class.cards]="view() === views.Cards">
         @for (pollution of visible(); track pollution.id) {
-          <li class="item">
+          <li
+            class="item"
+            [class.is-highlighted]="highlightedId() === pollution.id"
+            (mouseenter)="highlightedId.set(pollution.id)"
+            (mouseleave)="highlightedId.set(null)"
+            (focusin)="highlightedId.set(pollution.id)"
+            (focusout)="highlightedId.set(null)"
+          >
             <a class="item-link" [routerLink]="links.detail(pollution.id)">
               @if (view() === views.Cards) {
                 @if (pollution.image && !brokenImageIds().has(pollution.id)) {
@@ -127,4 +134,11 @@
       </ul>
     }
   </section>
+
+  <app-pollution-map
+    class="map"
+    [pollutions]="visible()"
+    [(highlighted)]="highlightedId"
+    (selected)="openDetail($event)"
+  />
 </main>

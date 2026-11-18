@@ -29,7 +29,7 @@ Jetons dans `Front/src/styles.scss` (`:root`). Aucune couleur écrite en dur ail
 | Niveau : élevée (orange) | `--level-high` | `#ff9440` |
 | Niveau : dangereuse (rouge) | `--level-dangerous` | `#ff6b5b` |
 
-Carte (illustration uniquement) : `--land`, `--park`, `--water`, `--road`, `--street`, `--building`.
+Carte (illustration et carte interactive) : `--land`, `--park`, `--water`, `--road`, `--street`, `--building`. Libellés de la carte : `--muted`, liseré `--bg`.
 
 Seule exception : `<meta name="theme-color">` dans `index.html`, qui ne lit pas le CSS. Sa valeur doit rester égale à `--bg`.
 
@@ -48,6 +48,8 @@ Seule exception : `<meta name="theme-color">` dans `index.html`, qui ne lit pas 
 
 Pas de petit sur-titre en majuscules au-dessus des titres.
 
+Exception : les noms de rues et de lieux de la carte interactive sont en **Noto Sans**, seule police servie par l'hébergeur des tuiles.
+
 ## Formes et espacements
 
 - **Un seul rayon** : `--radius: 8px` (panneaux, boutons, champs, puces, badges, images, bulle du repère). Les éléments réellement circulaires (pastille du repère, indicateur de chargement) restent des cercles. Les bâtiments de la carte ont des angles droits.
@@ -55,6 +57,15 @@ Pas de petit sur-titre en majuscules au-dessus des titres.
 - **Grille de 4 px** : marges, retraits et écarts sont des multiples de `0.25rem`.
 - **Résultats** : deux affichages, liste (lignes séparées par un filet) et cartes (grille, image 16/9 en haut, bordure, `--radius`). Sans image, la carte affiche « Aucune image ». La bascule est une paire de boutons-icônes (`list`, `layout-grid`), le bouton actif est teinté d'ambre.
 - **Boutons** : un style principal (`.btn-primary`, fond ambre) et un secondaire (`.btn-secondary`, bordure). `.btn-danger` est la variante rouge du secondaire. Un seul bouton principal par écran.
+
+## Carte
+
+- **Où** : carte interactive sur la liste et sur le formulaire. Le détail garde l'illustration SVG (`app-map-backdrop`).
+- **Moteur** : MapLibre GL, tuiles vectorielles OpenFreeMap (sans clé). Le style est construit à partir des jetons de carte, jamais d'un style tiers. Attribution OpenStreetMap toujours visible.
+- **Liste** : un repère circulaire par signalement filtré, à la couleur de son niveau, liseré `--bg`. La carte se recadre sur les résultats quand les filtres changent. Survoler ou cibler une ligne met son repère en avant (plus grand, liseré `--text`), et inversement. Un clic sur un repère ouvre le détail.
+- **Formulaire** : un clic sur la carte place le repère, qui se glisse ensuite. Latitude et longitude se remplissent avec 6 décimales. Les champs restent saisissables et déplacent le repère.
+- **Sans WebGL 2** : la carte affiche « Carte indisponible sur ce navigateur. ». La liste et la saisie des coordonnées restent utilisables.
+- La carte complète la liste, elle ne la remplace jamais : tout ce qui s'y fait se fait aussi au clavier hors de la carte.
 
 ## Icônes
 
@@ -69,7 +80,8 @@ Seules animations autorisées :
 - changement de couleur de bordure ou de fond au survol : 120 ms, `ease` ;
 - bouton enfoncé : `translateY(1px)` ;
 - apparition d'un message d'aide : 160 ms, fondu et glissement de 4 px ;
-- indicateur de chargement : rotation 700 ms.
+- indicateur de chargement : rotation 700 ms ;
+- déplacement de la carte (recadrage sur les résultats, recentrage sur le repère) : animation native de MapLibre.
 
 Toutes sont coupées sous `prefers-reduced-motion: reduce`. Pas de parallaxe, pas d'animation au défilement, pas de curseur personnalisé, pas de halo.
 

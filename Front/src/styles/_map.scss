@@ -1,0 +1,21 @@
+// MapLibre attribution in the site colors.
+// Selectors beat maplibre-gl.css, which loads after this sheet.
+
+.maplibregl-map {
+  font-family: var(--font-sans);
+
+  .maplibregl-ctrl.maplibregl-ctrl-attrib {
+    color: var(--muted);
+    background: var(--panel);
+    border-radius: var(--radius);
+
+    a {
+      color: var(--text-soft);
+    }
+  }
+
+  // "i" button of the collapsed attribution: MapLibre's dark icon made light
+  .maplibregl-ctrl-attrib-button {
+    filter: invert(1);
+  }
+}

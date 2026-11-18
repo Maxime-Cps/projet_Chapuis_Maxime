@@ -1,21 +1,14 @@
 <main class="page">
-  <app-map-backdrop />
+  <app-location-picker
+    class="map"
+    [position]="position()"
+    [place]="form.value.place"
+    [overlay]="panel"
+    [pinMode]="pinMode()"
+    (positionChange)="pickLocation($event)"
+  />
 
-  <div class="marker" aria-hidden="true">
-    <span class="marker-dot"></span>
-    <span class="marker-label">
-      <span class="marker-place">{{ form.value.place || "Lieu de l'observation" }}</span>
-      <span class="marker-coords">
-        @if (form.value.latitude != null && form.value.longitude != null) {
-          {{ form.value.latitude }} · {{ form.value.longitude }}
-        } @else {
-          Coordonnées à saisir
-        }
-      </span>
-    </span>
-  </div>
-
-  <section class="panel">
+  <section #panel class="panel">
     <nav class="panel-links">
       <a class="back" [routerLink]="links.list"><app-icon name="arrow-left" />Tous les signalements</a>
       <app-sign-out />

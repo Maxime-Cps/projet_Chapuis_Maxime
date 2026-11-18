@@ -7,6 +7,15 @@ const LEVEL_MAX = {
   high: 100,
 } as const;
 
+/** Color token of each level, from DESIGN.md. */
+export const LEVEL_TOKENS: Record<PollutionLevel, string> = {
+  [PollutionLevel.Low]: '--level-low',
+  [PollutionLevel.Moderate]: '--level-moderate',
+  [PollutionLevel.High]: '--level-high',
+  [PollutionLevel.Dangerous]: '--level-dangerous',
+  [PollutionLevel.Unknown]: '--muted',
+};
+
 /** Largest danger index the API stores (Postgres INTEGER). */
 export const MAX_DANGER_LEVEL = 2_147_483_647;
 
