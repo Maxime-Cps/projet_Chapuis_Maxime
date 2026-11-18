@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { UserApi } from '../../services/user-api';
 import { AuthSession } from '../../services/auth-session';
+import { AuthRedirect } from '../../services/auth-redirect';
 import { SignUpRequest } from '../../interfaces/SignUpRequest';
 import { LINKS } from '../../constants/routes';
 import { SIGN_UP_ERRORS } from '../../constants/messages';
@@ -16,11 +17,12 @@ const PASSWORD_MIN_LENGTH = 8;
   selector: 'app-sign-up',
   styleUrl: './sign-up.scss',
   templateUrl: './sign-up.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignUp {
   private readonly api = inject(UserApi);
   private readonly session = inject(AuthSession);
-  private readonly router = inject(Router);
+  private readonly redirect = inject(AuthRedirect);
 
   readonly links = LINKS;
   readonly passwordMinLength = PASSWORD_MIN_LENGTH;
@@ -53,7 +55,7 @@ export class SignUp {
     this.api.create(request).pipe(finalize(() => this.saving.set(false))).subscribe({
       next: (session) => {
         this.session.start(session);
-        this.router.navigateByUrl(LINKS.list);
+        this.redirect.resume();
       },
       error: (err: HttpErrorResponse) => {
         this.error.set(errorMessage(err));

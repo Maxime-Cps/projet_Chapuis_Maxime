@@ -41,9 +41,26 @@ describe('App', () => {
   it('should send a signed-out visitor to the sign-up page', async () => {
     const router = TestBed.inject(Router);
 
-    await router.navigateByUrl('/pollutions');
+    await router.navigateByUrl('/');
 
     expect(router.url).toBe('/signup');
+  });
+
+  it('should remember the page a signed-out visitor asked for', async () => {
+    const router = TestBed.inject(Router);
+
+    await router.navigateByUrl('/pollutions');
+
+    expect(router.url).toBe('/signup?redirect=%2Fpollutions');
+  });
+
+  it('should send a malformed pollution id to the pollution list', async () => {
+    TestBed.inject(AuthSession).start({ user: USER, token: 'signed-token' });
+    const router = TestBed.inject(Router);
+
+    await router.navigateByUrl('/pollutions/abc');
+
+    expect(router.url).toBe('/pollutions');
   });
 
   it('should keep a signed-in user away from the login page', async () => {

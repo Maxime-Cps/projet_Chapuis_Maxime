@@ -1,10 +1,9 @@
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AuthSession } from '../../services/auth-session';
-import { LINKS } from '../../constants/routes';
+import { AuthRedirect } from '../../services/auth-redirect';
 import { Icon } from '../icon/icon';
 
-/** Ends the session and returns to the sign-up page. */
+/** Returns to the sign-up page and ends the session, unless the page asked to stay (unsaved changes). */
 @Component({
   imports: [Icon],
   selector: 'app-sign-out',
@@ -13,13 +12,17 @@ import { Icon } from '../icon/icon';
       <app-icon name="log-out" />Se déconnecter
     </button>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignOut {
   private readonly session = inject(AuthSession);
-  private readonly router = inject(Router);
+  private readonly redirect = inject(AuthRedirect);
 
-  signOut() {
+  async signOut() {
+    if (!(await this.redirect.leaveForSignOut())) {
+      return;
+    }
+
     this.session.end();
-    this.router.navigateByUrl(LINKS.signUp);
   }
 }

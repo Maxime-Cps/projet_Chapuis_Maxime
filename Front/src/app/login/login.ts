@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthApi } from '../../services/auth-api';
 import { AuthSession } from '../../services/auth-session';
+import { AuthRedirect } from '../../services/auth-redirect';
 import { LoginRequest } from '../../interfaces/LoginRequest';
 import { LINKS } from '../../constants/routes';
 import { LOGIN_ERRORS } from '../../constants/messages';
@@ -14,11 +15,12 @@ import { LOGIN_ERRORS } from '../../constants/messages';
   selector: 'app-login',
   styleUrl: '../sign-up/sign-up.scss',
   templateUrl: './login.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login {
   private readonly api = inject(AuthApi);
   private readonly session = inject(AuthSession);
-  private readonly router = inject(Router);
+  private readonly redirect = inject(AuthRedirect);
 
   readonly links = LINKS;
   readonly error = signal<string | null>(null);
@@ -45,7 +47,7 @@ export class Login {
     this.api.login(request).pipe(finalize(() => this.saving.set(false))).subscribe({
       next: (session) => {
         this.session.start(session);
-        this.router.navigateByUrl(LINKS.list);
+        this.redirect.resume();
       },
       error: (err: HttpErrorResponse) => {
         this.error.set(errorMessage(err));

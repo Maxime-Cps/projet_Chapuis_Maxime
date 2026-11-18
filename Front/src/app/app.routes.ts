@@ -1,26 +1,28 @@
 import { Routes } from '@angular/router';
-import { PollutionForm } from './pollution-form/pollution-form';
-import { SignUp } from './sign-up/sign-up';
-import { Login } from './login/login';
-import { PollutionList } from './pollution-list/pollution-list';
-import { PollutionDetail } from './pollution-detail/pollution-detail';
-import { UserList } from './user-list/user-list';
 import { PAGE_TITLES, ROUTE_PATHS } from '../constants/routes';
 import { signedInGuard, signedOutGuard } from '../guards/auth.guards';
 
+/**
+ * Public pages come first: the signed-in block matches every URL and would
+ * otherwise send signed-out visitors of /signup back to /signup.
+ */
 export const routes: Routes = [
   {
-    path: '',
-    canActivateChild: [signedInGuard],
-    children: [
-      { path: ROUTE_PATHS.report, component: PollutionForm, title: PAGE_TITLES.report },
-      { path: ROUTE_PATHS.list, component: PollutionList, title: PAGE_TITLES.list },
-      { path: ROUTE_PATHS.detail, component: PollutionDetail, title: PAGE_TITLES.detail },
-      { path: ROUTE_PATHS.edit, component: PollutionForm, title: PAGE_TITLES.edit },
-      { path: ROUTE_PATHS.users, component: UserList, title: PAGE_TITLES.users },
-    ],
+    path: ROUTE_PATHS.signUp,
+    loadComponent: () => import('./sign-up/sign-up').then((m) => m.SignUp),
+    title: PAGE_TITLES.signUp,
+    canActivate: [signedOutGuard],
   },
-  { path: ROUTE_PATHS.signUp, component: SignUp, title: PAGE_TITLES.signUp, canActivate: [signedOutGuard] },
-  { path: ROUTE_PATHS.login, component: Login, title: PAGE_TITLES.login, canActivate: [signedOutGuard] },
+  {
+    path: ROUTE_PATHS.login,
+    loadComponent: () => import('./login/login').then((m) => m.Login),
+    title: PAGE_TITLES.login,
+    canActivate: [signedOutGuard],
+  },
+  {
+    path: '',
+    canMatch: [signedInGuard],
+    loadChildren: () => import('./signed-in.routes').then((m) => m.SIGNED_IN_ROUTES),
+  },
   { path: '**', redirectTo: ROUTE_PATHS.report },
 ];

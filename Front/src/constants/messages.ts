@@ -31,3 +31,6 @@ export const LOGIN_ERRORS = {
   unreachable: 'Serveur injoignable. Réessayez plus tard.',
   generic: 'La connexion a échoué. Réessayez.',
 } as const;
+
+/** Question asked before leaving a form with unsaved changes. */
+export const LEAVE_CONFIRMATION = 'Quitter sans enregistrer les modifications ?';
