@@ -18,6 +18,7 @@ describe('PollutionDetail', () => {
     latitude: '49.18',
     longitude: '2.46',
     image: '',
+    dangerLevel: 60,
   };
 
   let api: { getById: ReturnType<typeof vi.fn> };

@@ -11,7 +11,8 @@ const FORM_BODY = {
   place: "Canal Saint-Martin, Paris",
   latitude: 48.871,
   longitude: 2.365,
-  image: ""
+  image: "",
+  dangerLevel: 42
 };
 
 test("accepts numeric coordinates from the front form", () => {
@@ -34,4 +35,20 @@ test("rejects missing coordinates", () => {
 
 test("defaults a null image to an empty string", () => {
   assert.equal(readPollution({ ...FORM_BODY, image: null })?.image, "");
+});
+
+test("reads the danger level", () => {
+  assert.equal(readPollution(FORM_BODY)?.dangerLevel, 42);
+});
+
+test("rejects a missing, negative or decimal danger level", () => {
+  assert.equal(readPollution({ ...FORM_BODY, dangerLevel: undefined }), null);
+  assert.equal(readPollution({ ...FORM_BODY, dangerLevel: -1 }), null);
+  assert.equal(readPollution({ ...FORM_BODY, dangerLevel: 12.5 }), null);
+  assert.equal(readPollution({ ...FORM_BODY, dangerLevel: "42" }), null);
+});
+
+test("rejects a danger level beyond the INTEGER column", () => {
+  assert.equal(readPollution({ ...FORM_BODY, dangerLevel: 2_147_483_647 })?.dangerLevel, 2_147_483_647);
+  assert.equal(readPollution({ ...FORM_BODY, dangerLevel: 2_147_483_648 }), null);
 });

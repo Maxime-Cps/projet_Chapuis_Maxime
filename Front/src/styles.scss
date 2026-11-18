@@ -23,6 +23,12 @@
   --on-accent: #1a1206;
   --error: #ff8a7a;
 
+  // Niveaux de pollution (fond des badges, texte --on-accent)
+  --level-low: #a8dc90;
+  --level-moderate: #f2d84b;
+  --level-high: #ff9440;
+  --level-dangerous: #ff6b5b;
+
   --font-sans: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 

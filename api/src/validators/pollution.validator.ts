@@ -18,6 +18,14 @@ function readCoordinate(value: unknown): string | null {
   return null;
 }
 
+/** Largest value a Postgres INTEGER column holds. */
+const MAX_DANGER_LEVEL = 2_147_483_647;
+
+/** True for a danger index: an integer from 0 to MAX_DANGER_LEVEL (e.g. 42). */
+function isDangerLevel(value: unknown): value is number {
+  return Number.isInteger(value) && (value as number) >= 0 && (value as number) <= MAX_DANGER_LEVEL;
+}
+
 /** Extracts the writable pollution fields from a request body, or null when invalid. */
 export function readPollution(body: unknown): PollutionCreationAttributes | null {
   if (typeof body !== "object" || body === null) {
@@ -40,6 +48,10 @@ export function readPollution(body: unknown): PollutionCreationAttributes | null
     return null;
   }
 
+  if (!isDangerLevel(fields.dangerLevel)) {
+    return null;
+  }
+
   return {
     label: fields.label as string,
     type: { id: type.id, name: type.name },
@@ -48,6 +60,7 @@ export function readPollution(body: unknown): PollutionCreationAttributes | null
     place: fields.place as string,
     latitude,
     longitude,
-    image: typeof fields.image === "string" ? fields.image : ""
+    image: typeof fields.image === "string" ? fields.image : "",
+    dangerLevel: fields.dangerLevel
   };
 }

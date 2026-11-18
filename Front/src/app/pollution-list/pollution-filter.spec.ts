@@ -13,6 +13,7 @@ describe('matches', () => {
     latitude: '48.85',
     longitude: '2.34',
     image: '',
+    dangerLevel: 10,
   };
   const EMPTY: PollutionFilter = { text: '', typeId: null, from: '', to: '' };
 

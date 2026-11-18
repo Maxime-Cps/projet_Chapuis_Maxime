@@ -14,9 +14,11 @@ import { LINKS } from '../../constants/routes';
 import { deleteConfirmation, POLLUTION_ERRORS } from '../../constants/messages';
 import { Icon } from '../icon/icon';
 import { SignOut } from '../sign-out/sign-out';
+import { PollutionLevelPipe } from '../../pipes/pollution-level-pipe';
+import { HighlightPollutionDirective } from '../../directives/highlight-pollution-directive';
 
 @Component({
-  imports: [ReactiveFormsModule, RouterLink, DatePipe, Icon, SignOut],
+  imports: [ReactiveFormsModule, RouterLink, DatePipe, Icon, SignOut, PollutionLevelPipe, HighlightPollutionDirective],
   selector: 'app-pollution-list',
   styleUrl: './pollution-list.scss',
   templateUrl: './pollution-list.html',
