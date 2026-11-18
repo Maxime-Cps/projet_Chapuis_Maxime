@@ -5,6 +5,7 @@
     [place]="form.value.place"
     [overlay]="panel"
     [pinMode]="pinMode()"
+    [beacon]="savedBeacon()"
     (positionChange)="pickLocation($event)"
   />
 
@@ -15,7 +16,14 @@
     </nav>
 
     @if (loading()) {
-      <p id="form-loading" class="loading" role="status">Chargement du signalement…</p>
+      <p id="form-loading" class="visually-hidden" role="status">Chargement du signalement…</p>
+      <div class="skeleton-form" aria-hidden="true">
+        <span class="skeleton skeleton-title"></span>
+        @for (field of skeletonFields; track field) {
+          <span class="skeleton skeleton-label"></span>
+          <span class="skeleton skeleton-field"></span>
+        }
+      </div>
     } @else if (!isSubmitted()) {
       <header class="panel-head">
         @if (editing) {
@@ -123,25 +131,23 @@
           }
         </div>
 
-        <div class="row">
-          <div class="field">
-            <label for="pollutionDate">Observée le <span class="req" aria-hidden="true">*</span></label>
-            <input
-              id="pollutionDate"
-              formControlName="date"
-              aria-required="true"
-              type="datetime-local"
-              aria-describedby="date-hint"
-            />
-            @if (form.controls['date'].touched && form.controls['date'].errors?.['future']) {
-              <small id="date-hint" class="hint error" role="alert">La date ne peut pas être dans le futur.</small>
-            }
-          </div>
+        <div class="field">
+          <label for="pollutionDate">Observée le <span class="req" aria-hidden="true">*</span></label>
+          <input
+            id="pollutionDate"
+            formControlName="date"
+            aria-required="true"
+            type="datetime-local"
+            aria-describedby="date-hint"
+          />
+          @if (form.controls['date'].touched && form.controls['date'].errors?.['future']) {
+            <small id="date-hint" class="hint error" role="alert">La date ne peut pas être dans le futur.</small>
+          }
+        </div>
 
-          <div class="field">
-            <label for="pollutionImage">Image (facultatif)</label>
-            <input id="pollutionImage" formControlName="image" type="url" placeholder="https://" />
-          </div>
+        <div class="field image-field">
+          <span class="label" id="image-label">Image (facultatif)</span>
+          <app-image-drop formControlName="image" role="group" aria-labelledby="image-label" />
         </div>
 
         @if (error(); as error) {

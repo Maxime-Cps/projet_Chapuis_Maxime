@@ -14,3 +14,26 @@
   color: var(--muted);
   text-align: center;
 }
+
+// Bascule repères / chaleur, posée sur la carte
+.view-switch {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  .icon-btn {
+    --tone: var(--muted);
+  }
+
+  .icon-btn[aria-pressed='true'] {
+    --tone: var(--accent);
+
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+}

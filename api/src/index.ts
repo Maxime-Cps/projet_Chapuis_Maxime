@@ -6,6 +6,9 @@ import initRoutes from "./routes";
 
 const app: Application = express();
 
+// Reports may carry a dropped photo as a data URL (the front shrinks it to ~300 kB)
+const JSON_BODY_LIMIT = "2mb";
+
 const corsOptions: CorsOptions = {
   origin: "*",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -16,7 +19,7 @@ const corsOptions: CorsOptions = {
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
-app.use(express.json());
+app.use(express.json({ limit: JSON_BODY_LIMIT }));
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));

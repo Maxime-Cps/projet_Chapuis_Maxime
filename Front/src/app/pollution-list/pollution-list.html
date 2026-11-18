@@ -45,6 +45,15 @@
       </div>
 
       <button type="button" class="btn-secondary" (click)="resetFilters()">Réinitialiser</button>
+
+      <app-date-timeline
+        class="timeline"
+        [dates]="allDates()"
+        [counted]="timelineDates()"
+        [from]="filter().from"
+        [to]="filter().to"
+        (rangeChange)="setPeriod($event)"
+      />
     </form>
 
     @if (error(); as error) {
@@ -52,11 +61,25 @@
     }
 
     @if (loading()) {
-      <p id="list-loading" class="loading" role="status">Chargement des signalements…</p>
+      <p id="list-loading" class="visually-hidden" role="status">Chargement des signalements…</p>
+      <ul class="list" aria-hidden="true">
+        @for (row of skeletonRows; track row) {
+          <li class="item skeleton-item">
+            <span class="skeleton skeleton-tags"></span>
+            <span class="skeleton skeleton-title"></span>
+            <span class="skeleton skeleton-meta"></span>
+          </li>
+        }
+      </ul>
     } @else {
       <div class="results-bar">
-        <p class="count" aria-live="polite">
-          {{ visible().length }} sur {{ pollutions().length }} signalement(s)
+        <p class="count">
+          <span class="visually-hidden" aria-live="polite">
+            {{ visible().length }} sur {{ available().length }} signalement(s)
+          </span>
+          <span aria-hidden="true">
+            <app-count-up [value]="visible().length" /> sur {{ available().length }} signalement(s)
+          </span>
         </p>
 
         <div class="view-switch" role="group" aria-label="Affichage">
@@ -87,6 +110,7 @@
         @for (pollution of visible(); track pollution.id) {
           <li
             class="item"
+            [style.view-transition-name]="transitionName(pollution.id)"
             [class.is-highlighted]="highlightedId() === pollution.id"
             (mouseenter)="highlightedId.set(pollution.id)"
             (mouseleave)="highlightedId.set(null)"
@@ -122,7 +146,6 @@
               type="button"
               class="icon-btn icon-btn-danger"
               (click)="remove(pollution)"
-              [disabled]="deletingIds().has(pollution.id)"
               [attr.aria-label]="'Supprimer ' + pollution.label"
             >
               <app-icon name="trash-2" />
@@ -138,6 +161,7 @@
   <app-pollution-map
     class="map"
     [pollutions]="visible()"
+    [frameKey]="frameKey()"
     [(highlighted)]="highlightedId"
     (selected)="openDetail($event)"
   />

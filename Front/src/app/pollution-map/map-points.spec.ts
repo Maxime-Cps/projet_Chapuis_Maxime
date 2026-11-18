@@ -18,7 +18,7 @@ describe('toMapPoints', () => {
 
   it('should place a pollution at its coordinates, colored by level', () => {
     expect(toMapPoints([BASE])).toEqual([
-      { id: 1, position: { latitude: 48.85, longitude: 2.34 }, colorToken: '--level-high' },
+      { id: 1, position: { latitude: 48.85, longitude: 2.34 }, colorToken: '--level-high', severity: 3 },
     ]);
   });
 
@@ -26,6 +26,7 @@ describe('toMapPoints', () => {
     const [point] = toMapPoints([{ ...BASE, dangerLevel: null }]);
 
     expect(point.colorToken).toBe('--muted');
+    expect(point.severity).toBe(0);
   });
 
   it('should leave out pollutions without valid coordinates', () => {

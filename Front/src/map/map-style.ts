@@ -13,6 +13,9 @@ const PLACES = ['city', 'town', 'village', 'suburb', 'quarter', 'neighbourhood']
 
 /** Zoom from which buildings and street names appear. */
 const BUILDING_MIN_ZOOM = 13;
+
+/** Height of buildings without one in the tiles, in meters. */
+const BUILDING_DEFAULT_HEIGHT = 8;
 const STREET_NAME_MIN_ZOOM = 14;
 
 /** Reads a design token from the root element, e.g. readToken('--water') -> '#1d2b31'. */
@@ -38,9 +41,9 @@ export function cityStyle(): StyleSpecification {
         'source-layer': 'waterway',
         paint: { 'line-color': readToken('--water'), 'line-width': 1.5 },
       },
-      { ...fill('building', 'building', readToken('--building')), minzoom: BUILDING_MIN_ZOOM },
       road('street', MINOR_ROADS, readToken('--street'), [12, 0.5, 18, 10]),
       road('road', MAJOR_ROADS, readToken('--road'), [10, 1, 18, 18]),
+      buildings(),
       {
         id: 'street-name',
         type: 'symbol',
@@ -95,6 +98,22 @@ function road(id: string, classes: string[], color: string, stops: number[]): La
     paint: {
       'line-color': color,
       'line-width': ['interpolate', ['exponential', 1.5], ['zoom'], ...stops],
+    },
+  };
+}
+
+/** Buildings raised to their height from the tiles, seen in relief once the camera tilts. */
+function buildings(): LayerSpecification {
+  return {
+    id: 'building',
+    type: 'fill-extrusion',
+    source: SOURCE,
+    'source-layer': 'building',
+    minzoom: BUILDING_MIN_ZOOM,
+    paint: {
+      'fill-extrusion-color': readToken('--building'),
+      'fill-extrusion-height': ['coalesce', ['get', 'render_height'], BUILDING_DEFAULT_HEIGHT],
+      'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
     },
   };
 }

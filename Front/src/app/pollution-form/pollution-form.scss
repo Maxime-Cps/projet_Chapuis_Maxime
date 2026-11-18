@@ -100,3 +100,27 @@ $mobile: 48rem;
     transition: none;
   }
 }
+
+// Champs d'attente, pendant le chargement d'un signalement modifié
+.skeleton-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeleton-title {
+  width: 75%;
+  height: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-label {
+  width: 30%;
+  height: 0.875rem;
+}
+
+.skeleton-field {
+  width: 100%;
+  height: 2.75rem;
+  margin-bottom: 0.5rem;
+}

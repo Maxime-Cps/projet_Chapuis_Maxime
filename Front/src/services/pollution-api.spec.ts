@@ -64,6 +64,8 @@ describe('PollutionApi', () => {
   it('should DELETE by id', () => {
     service.delete(POLLUTION.id).subscribe();
 
-    expect(http.expectOne(PollutionApi.itemUrl(POLLUTION.id)).request.method).toBe('DELETE');
+    const request = http.expectOne(PollutionApi.itemUrl(POLLUTION.id)).request;
+    expect(request.method).toBe('DELETE');
+    expect(request.keepalive).toBe(true);
   });
 });

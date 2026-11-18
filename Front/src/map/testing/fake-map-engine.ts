@@ -18,6 +18,8 @@ export function provideFakeMapEngine(maps: FakeCityMap[] = []): Provider {
         options,
         setPoints: vi.fn(),
         highlight: vi.fn(),
+        setView: vi.fn(),
+        setBeacon: vi.fn(),
         fit: vi.fn(),
         setPin: vi.fn(),
         setPadding: vi.fn(),

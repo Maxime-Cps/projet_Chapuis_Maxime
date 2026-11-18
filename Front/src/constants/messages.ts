@@ -7,6 +7,12 @@ export const POLLUTION_ERRORS = {
   delete: 'La suppression a échoué. Réessayez.',
 } as const;
 
+/** User-facing error messages for a dropped image. */
+export const IMAGE_ERRORS = {
+  notImage: "Ce fichier n'est pas une image.",
+  unreadable: 'Image illisible. Essayez un autre fichier.',
+} as const;
+
 /** User-facing error messages for the user list. */
 export const USER_ERRORS = {
   listLoad: 'Impossible de charger les utilisateurs.',
@@ -25,8 +31,3 @@ export const LOGIN_ERRORS = {
   unreachable: 'Serveur injoignable. Réessayez plus tard.',
   generic: 'La connexion a échoué. Réessayez.',
 } as const;
-
-/** Question asked before deleting a pollution report. */
-export function deleteConfirmation(label: string): string {
-  return `Supprimer « ${label} » ?`;
-}

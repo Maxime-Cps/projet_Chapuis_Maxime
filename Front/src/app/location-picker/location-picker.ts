@@ -2,8 +2,8 @@ import { Component, effect, ElementRef, inject, input, model, viewChild } from '
 import { GeoPosition } from '../../interfaces/GeoPosition';
 import { injectCityMap } from '../../map/inject-city-map';
 import { roundPosition } from '../../utils/geo';
-import { paddingBeside } from '../../map/map-padding';
-import { PinMode } from '../../map/city-map';
+import { keepClearOf } from '../../map/keep-clear-of';
+import { Beacon, PinMode } from '../../map/city-map';
 import { DEFAULT_CENTER, DEFAULT_ZOOM, MAP_UNAVAILABLE, STREET_ZOOM } from '../../constants/map';
 
 /**
@@ -56,6 +56,9 @@ export class LocationPicker {
   /** Element drawn over the map, e.g. the form panel: centering keeps the pin clear of it. */
   readonly overlay = input<HTMLElement | null>(null);
 
+  /** 3D column dropped on the map, e.g. once the report is saved; none with null. */
+  readonly beacon = input<Beacon | null>(null);
+
   protected readonly placeholder = "Lieu de l'observation";
   protected readonly unavailableText = MAP_UNAVAILABLE;
 
@@ -80,19 +83,11 @@ export class LocationPicker {
         return;
       }
 
-      const update = () =>
-        map.setPadding(
-          paddingBeside(this.host.nativeElement.getBoundingClientRect(), overlay.getBoundingClientRect()),
-        );
-      update();
-
-      const observer = new ResizeObserver(update);
-      observer.observe(this.host.nativeElement);
-      observer.observe(overlay);
-      onCleanup(() => observer.disconnect());
+      onCleanup(keepClearOf(map, this.host.nativeElement, overlay));
     });
 
     effect(() => this.cityMap.map()?.setPinMode(this.pinMode()));
+    effect(() => this.cityMap.map()?.setBeacon(this.beacon()));
 
     effect(() => {
       const map = this.cityMap.map();

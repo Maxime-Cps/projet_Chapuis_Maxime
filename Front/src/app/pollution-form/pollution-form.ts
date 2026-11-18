@@ -22,9 +22,14 @@ import {POLLUTION_ERRORS} from '../../constants/messages';
 import {Icon} from '../icon/icon';
 import {SignOut} from '../sign-out/sign-out';
 import {MAX_DANGER_LEVEL} from '../../utils/pollution-level';
+import {toBeacon} from '../pollution-map/beacon';
+import {ImageDrop} from '../image-drop/image-drop';
 
 /** Integer, 0 or more (e.g. 42), as the API expects for the danger level. */
 const WHOLE_NUMBER = /^\d+$/;
+
+/** Fields drawn while an edited report loads. */
+const SKELETON_FIELDS = 5;
 
 @Component({
   imports: [
@@ -33,7 +38,8 @@ const WHOLE_NUMBER = /^\d+$/;
     LocationPicker,
     RouterLink,
     Icon,
-    SignOut
+    SignOut,
+    ImageDrop
   ],
   selector: 'app-pollution-form',
   styleUrl: './pollution-form.scss',
@@ -61,6 +67,7 @@ export class PollutionForm {
 
   readonly pollutionTypeList = POLLUTION_TYPES;
   readonly maxDangerLevel = MAX_DANGER_LEVEL;
+  readonly skeletonFields = Array.from({ length: SKELETON_FIELDS }, (_, field) => field);
 
   readonly form : FormGroup = new FormGroup({
     label: new FormControl("", [Validators.required]),
@@ -90,6 +97,17 @@ export class PollutionForm {
     this.form.valueChanges.pipe(map(() => this.typedPosition())),
     { initialValue: null },
   );
+
+  /** Column dropped on the map once the report is saved. */
+  readonly savedBeacon = computed(() => {
+    const position = this.position();
+    if (!this.isSubmitted() || position === null) {
+      return null;
+    }
+
+    const { type, dangerLevel } = this.form.getRawValue();
+    return toBeacon(position, type?.id, dangerLevel);
+  });
 
   constructor() {
     const param = this.route.snapshot.paramMap.get(ID_PARAM);

@@ -24,6 +24,7 @@ const LYON: Pollution = { ...PARIS, id: 2, latitude: '45.76', longitude: '4.83' 
   template: `
     <app-pollution-map
       [pollutions]="pollutions()"
+      [frameKey]="frameKey()"
       [(highlighted)]="highlighted"
       (selected)="selected.set($event)"
     />
@@ -31,6 +32,7 @@ const LYON: Pollution = { ...PARIS, id: 2, latitude: '45.76', longitude: '4.83' 
 })
 class Host {
   readonly pollutions = signal<Pollution[]>([PARIS, LYON]);
+  readonly frameKey = signal<string | null>(null);
   readonly highlighted = signal<number | null>(null);
   readonly selected = signal<number | null>(null);
 }
@@ -72,6 +74,21 @@ describe('PollutionMap', () => {
     host.pollutions.set([PARIS]);
     await fixture.whenStable();
     expect(map.fit).toHaveBeenCalledTimes(2);
+  });
+
+  it('should reframe only when the frame key changes, when given', async () => {
+    const { fixture, host, map } = await render();
+    host.frameKey.set('filters-a');
+    await fixture.whenStable();
+    expect(map.fit).toHaveBeenCalledTimes(2);
+
+    host.pollutions.set([PARIS]);
+    await fixture.whenStable();
+    expect(map.fit).toHaveBeenCalledTimes(2);
+
+    host.frameKey.set('filters-b');
+    await fixture.whenStable();
+    expect(map.fit).toHaveBeenCalledTimes(3);
   });
 
   it('should put forward the dot highlighted from the list', async () => {
