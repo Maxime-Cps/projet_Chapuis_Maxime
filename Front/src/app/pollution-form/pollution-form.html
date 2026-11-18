@@ -166,8 +166,8 @@
       </form>
     } @else {
       <app-pollution-recap
-        [data]="form.getRawValue()"
-        (back)="isSubmitted.set(false)"
+        [data]="saved()"
+        (back)="saved.set(undefined)"
         (restart)="restart()"
       />
     }

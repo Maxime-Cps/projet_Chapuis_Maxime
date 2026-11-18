@@ -8,6 +8,9 @@ const USERS = 'users';
 /** Name of the route parameter holding a pollution id. */
 export const ID_PARAM = 'id';
 
+/** Query parameter holding the page to open once signed in, e.g. `/signup?redirect=%2Fusers`. */
+export const REDIRECT_PARAM = 'redirect';
+
 /** Path patterns for the router configuration. */
 export const ROUTE_PATHS = {
   report: REPORT,

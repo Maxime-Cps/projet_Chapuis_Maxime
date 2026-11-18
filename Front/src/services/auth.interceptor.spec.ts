@@ -69,6 +69,18 @@ describe('authInterceptor', () => {
     backend.expectOne(UserApi.URL).flush(null, { status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized' });
 
     expect(session.isSignedIn()).toBe(false);
-    expect(navigate).toHaveBeenCalledWith('/login');
+    expect(navigate).toHaveBeenCalledWith('/login', expect.anything());
+  });
+
+  it('should remember the current page when the API rejects the token', async () => {
+    signIn();
+    const router = TestBed.inject(Router);
+    vi.spyOn(router, 'url', 'get').mockReturnValue('/users');
+    const navigate = vi.spyOn(router, 'navigateByUrl');
+
+    http.get(UserApi.URL).subscribe({ error: () => undefined });
+    backend.expectOne(UserApi.URL).flush(null, { status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized' });
+
+    expect(router.serializeUrl(router.parseUrl(String(navigate.mock.calls[0][0])))).toBe('/login?redirect=%2Fusers');
   });
 });

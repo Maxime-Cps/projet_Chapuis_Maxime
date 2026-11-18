@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { finalize, map } from 'rxjs';
@@ -24,6 +24,7 @@ import {SignOut} from '../sign-out/sign-out';
 import {MAX_DANGER_LEVEL} from '../../utils/pollution-level';
 import {toBeacon} from '../pollution-map/beacon';
 import {ImageDrop} from '../image-drop/image-drop';
+import {UnsavedChanges} from '../../interfaces/UnsavedChanges';
 
 /** Integer, 0 or more (e.g. 42), as the API expects for the danger level. */
 const WHOLE_NUMBER = /^\d+$/;
@@ -44,8 +45,9 @@ const SKELETON_FIELDS = 5;
   selector: 'app-pollution-form',
   styleUrl: './pollution-form.scss',
   templateUrl: './pollution-form.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PollutionForm {
+export class PollutionForm implements UnsavedChanges {
   private readonly api = inject(PollutionApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -55,7 +57,9 @@ export class PollutionForm {
 
   readonly links = LINKS;
   readonly editing = this.route.snapshot.paramMap.has(ID_PARAM);
-  readonly isSubmitted = signal(false);
+  /** Values of the last save, shown in the recap. A stable reference, so the recap only re-renders on save. */
+  readonly saved = signal<NewPollution | undefined>(undefined);
+  readonly isSubmitted = computed(() => this.saved() !== undefined);
   readonly error = signal<string | null>(null);
   readonly loading = signal(false);
 
@@ -137,7 +141,8 @@ export class PollutionForm {
     save.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: (pollution) => {
         this.id = pollution.id;
-        this.isSubmitted.set(true);
+        this.form.markAsPristine();
+        this.saved.set(fields);
       },
       error: () => this.error.set(POLLUTION_ERRORS.save),
     });
@@ -147,7 +152,7 @@ export class PollutionForm {
   restart() {
     this.form.reset();
     this.id = null;
-    this.isSubmitted.set(false);
+    this.saved.set(undefined);
 
     if (this.route.snapshot.paramMap.has(ID_PARAM)) {
       this.router.navigateByUrl(LINKS.report);
@@ -170,6 +175,10 @@ export class PollutionForm {
   private typedPosition(): GeoPosition | null {
     const { latitude, longitude } = this.form.getRawValue();
     return toGeoPosition(latitude, longitude);
+  }
+
+  hasUnsavedChanges(): boolean {
+    return this.form.dirty;
   }
 
   /** Loads an existing pollution into the form, matching its type to a radio option. */

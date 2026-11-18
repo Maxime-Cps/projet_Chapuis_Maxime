@@ -53,6 +53,30 @@ describe('Login', () => {
     expect(TestBed.inject(Router).url).toBe('/pollutions');
   });
 
+  it('should open the page asked for before signing in', async () => {
+    api.login.mockReturnValue(of(SESSION));
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/login?redirect=%2Fusers');
+    fillForm();
+
+    component.onSubmit();
+    await fixture.whenStable();
+
+    expect(router.url).toBe('/users');
+  });
+
+  it('should ignore a redirect to another site', async () => {
+    api.login.mockReturnValue(of(SESSION));
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/login?redirect=%2F%2Fevil.example');
+    fillForm();
+
+    component.onSubmit();
+    await fixture.whenStable();
+
+    expect(router.url).toBe('/pollutions');
+  });
+
   it('should display an error on wrong credentials', async () => {
     api.login.mockReturnValue(
       throwError(() => new HttpErrorResponse({ status: HttpStatusCode.Unauthorized })),

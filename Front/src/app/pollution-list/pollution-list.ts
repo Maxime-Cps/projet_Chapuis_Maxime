@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -41,6 +41,7 @@ const SKELETON_ROWS = 4;
   selector: 'app-pollution-list',
   styleUrl: './pollution-list.scss',
   templateUrl: './pollution-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PollutionList {
   private readonly api = inject(PollutionApi);

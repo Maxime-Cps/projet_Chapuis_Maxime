@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { UserApi } from '../../services/user-api';
@@ -15,6 +15,7 @@ import { SignOut } from '../sign-out/sign-out';
   selector: 'app-user-list',
   styleUrl: './user-list.scss',
   templateUrl: './user-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserList {
   private readonly api = inject(UserApi);

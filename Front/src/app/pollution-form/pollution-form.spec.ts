@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { PollutionForm } from './pollution-form';
 import { PollutionApi } from '../../services/pollution-api';
 import { routes } from '../app.routes';
@@ -54,6 +55,40 @@ describe('PollutionForm', () => {
     const req = TestBed.inject(HttpTestingController).expectOne(PollutionApi.URL);
     req.flush({ ...req.request.body, id: 1 });
     expect(component.isSubmitted()).toBe(true);
+    expect(component.hasUnsavedChanges()).toBe(false);
+  });
+
+  it('should keep reporting unsaved changes while saving', () => {
+    component.form.controls['label'].setValue('Bouteilles');
+    component.form.markAsDirty();
+    vi.spyOn(component.form, 'invalid', 'get').mockReturnValue(false);
+
+    component.onSubmit();
+
+    expect(component.saving()).toBe(true);
+    expect(component.hasUnsavedChanges()).toBe(true);
+  });
+
+  it('should ask before signing out with unsaved changes', async () => {
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const harness = await RouterTestingHarness.create('/');
+    const form = harness.routeDebugElement!.componentInstance as PollutionForm;
+    form.form.markAsDirty();
+
+    (harness.routeNativeElement!.querySelector('app-sign-out button') as HTMLButtonElement).click();
+    await harness.fixture.whenStable();
+
+    expect(confirm).toHaveBeenCalled();
+    expect(TestBed.inject(AuthSession).isSignedIn()).toBe(true);
+    expect(TestBed.inject(Router).url).toBe('/');
+    confirm.mockRestore();
+  });
+
+  it('should report unsaved changes once a field is edited', () => {
+    component.form.controls['label'].setValue('Bouteilles');
+    component.form.markAsDirty();
+
+    expect(component.hasUnsavedChanges()).toBe(true);
   });
 
   it('should sign out and go to the sign-up page', async () => {
@@ -179,7 +214,7 @@ describe('PollutionForm', () => {
     });
 
     it('should lock the pin once the report is saved', () => {
-      component.isSubmitted.set(true);
+      component.saved.set(component.form.getRawValue());
 
       expect(component.pinMode()).toBe(PinMode.Fixed);
     });

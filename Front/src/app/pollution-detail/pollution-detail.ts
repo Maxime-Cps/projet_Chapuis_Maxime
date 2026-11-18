@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -21,6 +21,7 @@ import { reportTransition } from '../../utils/view-transition';
   selector: 'app-pollution-detail',
   styleUrl: './pollution-detail.scss',
   templateUrl: './pollution-detail.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PollutionDetail {
   private readonly api = inject(PollutionApi);

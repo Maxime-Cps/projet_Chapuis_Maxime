@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * Decorative city map drawn behind the form.
@@ -30,5 +30,6 @@ import { Component } from '@angular/core';
       </g>
     </svg>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapBackdrop {}

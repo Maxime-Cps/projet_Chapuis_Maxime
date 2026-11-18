@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /** Icons available in {@link Icon}, named after their Lucide counterpart. */
 export type IconName =
@@ -110,6 +110,7 @@ export type IconName =
       }
     </svg>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Icon {
   readonly name = input.required<IconName>();
