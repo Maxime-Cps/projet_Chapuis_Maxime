@@ -9,6 +9,9 @@ import { PollutionApi } from '../../services/pollution-api';
 import { Pollution } from '../../interfaces/Pollution';
 import { POLLUTION_TYPES } from '../../interfaces/PollutionType';
 import { AuthSession } from '../../services/auth-session';
+import { FakeCityMap, provideFakeMapEngine } from '../../map/testing/fake-map-engine';
+import { PollutionDeletion } from '../../services/pollution-deletion';
+import { MapView } from '../../map/city-map';
 
 describe('PollutionList', () => {
   const BASE: Omit<Pollution, 'id' | 'label' | 'type'> = {
@@ -32,14 +35,20 @@ describe('PollutionList', () => {
   let fixture: ComponentFixture<PollutionList>;
   let component: PollutionList;
   let api: { getAll: ReturnType<typeof vi.fn>; delete: ReturnType<typeof vi.fn> };
+  let maps: FakeCityMap[];
 
   beforeEach(async () => {
     sessionStorage.clear();
+    maps = [];
     api = { getAll: vi.fn().mockReturnValue(of([PLASTIC, AIR])), delete: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [PollutionList],
-      providers: [provideRouter(routes), { provide: PollutionApi, useValue: api }],
+      providers: [
+        provideRouter(routes),
+        provideFakeMapEngine(maps),
+        { provide: PollutionApi, useValue: api },
+      ],
     }).compileComponents();
 
     TestBed.inject(AuthSession).start({
@@ -98,15 +107,47 @@ describe('PollutionList', () => {
     expect(labels()).toEqual(['Fumée']);
   });
 
-  it('should remove a pollution once deletion is confirmed', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
+  it('should hide a deleted pollution at once, and delete it once the undo delay is over', async () => {
     api.delete.mockReturnValue(of(undefined));
 
     component.remove(PLASTIC);
     await fixture.whenStable();
 
+    expect(labels()).toEqual(['Fumée']);
+    expect(api.delete).not.toHaveBeenCalled();
+
+    TestBed.inject(PollutionDeletion).commit();
+    await fixture.whenStable();
+
     expect(api.delete).toHaveBeenCalledWith(PLASTIC.id);
     expect(labels()).toEqual(['Fumée']);
+  });
+
+  it('should show the pollution again when the deletion is undone', async () => {
+    component.remove(PLASTIC);
+    TestBed.inject(PollutionDeletion).undo();
+    await fixture.whenStable();
+
+    expect(labels()).toEqual(['Bouteilles', 'Fumée']);
+    expect(api.delete).not.toHaveBeenCalled();
+  });
+
+  it('should filter by the period picked on the timeline', async () => {
+    component.setPeriod({ from: '2026-09-13', to: '' });
+    await fixture.whenStable();
+
+    expect(component.filterForm.controls.from.value).toBe('2026-09-13');
+    expect(labels()).toEqual([]);
+  });
+
+  it('should switch the map to the heat view', async () => {
+    const heat = fixture.nativeElement.querySelector('[aria-label="Carte de chaleur"]') as HTMLButtonElement;
+
+    heat.click();
+    await fixture.whenStable();
+
+    expect(maps[0].setView).toHaveBeenLastCalledWith(MapView.Heat);
+    expect(heat.getAttribute('aria-pressed')).toBe('true');
   });
 
   it('should show photos only in the card view', async () => {
@@ -152,11 +193,28 @@ describe('PollutionList', () => {
     expect(fixture.nativeElement.querySelector('[aria-label="Liste"]').getAttribute('aria-pressed')).toBe('false');
   });
 
-  it('should keep the pollution when deletion is cancelled', () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(false);
+  it('should put forward the dot of the hovered row', async () => {
+    const row = fixture.nativeElement.querySelector('.item') as HTMLElement;
 
-    component.remove(PLASTIC);
+    row.dispatchEvent(new MouseEvent('mouseenter'));
+    await fixture.whenStable();
 
-    expect(api.delete).not.toHaveBeenCalled();
+    expect(maps[0].highlight).toHaveBeenLastCalledWith(PLASTIC.id);
+    expect(row.classList).toContain('is-highlighted');
+  });
+
+  it('should highlight the row of the hovered dot', async () => {
+    maps[0].options.onPointHover!(AIR.id);
+    await fixture.whenStable();
+
+    const highlighted = fixture.nativeElement.querySelector('.item.is-highlighted .item-label');
+    expect(highlighted.textContent.trim()).toBe(AIR.label);
+  });
+
+  it('should open the detail of a clicked dot', async () => {
+    maps[0].options.onPointClick!(AIR.id);
+    await fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe(`/pollutions/${AIR.id}`);
   });
 });

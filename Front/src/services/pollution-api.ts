@@ -27,8 +27,9 @@ export class PollutionApi {
     return this.http.put<Pollution>(PollutionApi.itemUrl(pollution.id), pollution);
   }
 
+  /** Kept alive by the browser when the page closes, e.g. a deletion sent on leaving. */
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(PollutionApi.itemUrl(id));
+    return this.http.delete<void>(PollutionApi.itemUrl(id), { keepalive: true });
   }
 
   static itemUrl(id: number): string {

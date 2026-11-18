@@ -1,15 +1,38 @@
+$wide: 64rem;
+
+// Results panel on the left, sticky map on the right; map on top on mobile
 .page {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
   min-height: 100dvh;
   padding: 1.5rem 1rem;
   background: var(--bg);
+
+  @media (min-width: $wide) {
+    grid-template-columns: minmax(0, 36rem) minmax(0, 1fr);
+    padding-inline: 1.5rem;
+  }
+}
+
+.map {
+  order: -1;
+  height: 16rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  @media (min-width: $wide) {
+    position: sticky;
+    top: 1.5rem;
+    order: 0;
+    height: calc(100dvh - 3rem);
+  }
 }
 
 .panel {
   gap: 1rem;
   width: 100%;
-  align-self: flex-start;
 
   @media (max-width: 30rem) {
     padding: 1.25rem 1rem;
@@ -36,7 +59,8 @@
   gap: 0.75rem;
 }
 
-.field-wide {
+.field-wide,
+.timeline {
   grid-column: 1 / -1;
 }
 
@@ -123,6 +147,18 @@
 .item-label {
   font-weight: 600;
   overflow-wrap: anywhere;
+  transition: color 120ms ease;
+}
+
+// Report hovered in the list or on the map
+.item.is-highlighted .item-label {
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item-label {
+    transition: none;
+  }
 }
 
 .item-meta {
@@ -144,6 +180,11 @@
     overflow: hidden;
     border: 1px solid var(--border);
     border-radius: var(--radius);
+    transition: border-color 120ms ease;
+  }
+
+  .item.is-highlighted {
+    border-color: var(--accent);
   }
 
   .item-link {
@@ -187,4 +228,27 @@
   font-size: var(--text-small);
   color: var(--muted);
   text-align: center;
+}
+
+// Lignes d'attente, à la forme des lignes de résultats
+.skeleton-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1rem 0;
+}
+
+.skeleton-tags {
+  width: 8rem;
+  height: 1.25rem;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 1.25rem;
+}
+
+.skeleton-meta {
+  width: 45%;
+  height: 0.875rem;
 }

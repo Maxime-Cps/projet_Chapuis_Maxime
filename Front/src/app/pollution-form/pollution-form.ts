@@ -1,6 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { finalize, map } from 'rxjs';
 import {POLLUTION_TYPES, PollutionType} from '../../interfaces/PollutionType';
 import {
   FormControl,
@@ -10,7 +11,10 @@ import {
 } from '@angular/forms';
 import {PollutionRecap} from '../pollution-recap/pollution-recap';
 import {notInFuture} from '../../validators/date.validators';
-import {MapBackdrop} from '../map-backdrop/map-backdrop';
+import {LocationPicker} from '../location-picker/location-picker';
+import {GeoPosition} from '../../interfaces/GeoPosition';
+import {toGeoPosition} from '../../utils/geo';
+import {PinMode} from '../../map/city-map';
 import {PollutionApi} from '../../services/pollution-api';
 import {NewPollution, Pollution} from '../../interfaces/Pollution';
 import {ID_PARAM, LINKS} from '../../constants/routes';
@@ -18,18 +22,24 @@ import {POLLUTION_ERRORS} from '../../constants/messages';
 import {Icon} from '../icon/icon';
 import {SignOut} from '../sign-out/sign-out';
 import {MAX_DANGER_LEVEL} from '../../utils/pollution-level';
+import {toBeacon} from '../pollution-map/beacon';
+import {ImageDrop} from '../image-drop/image-drop';
 
 /** Integer, 0 or more (e.g. 42), as the API expects for the danger level. */
 const WHOLE_NUMBER = /^\d+$/;
+
+/** Fields drawn while an edited report loads. */
+const SKELETON_FIELDS = 5;
 
 @Component({
   imports: [
     ReactiveFormsModule,
     PollutionRecap,
-    MapBackdrop,
+    LocationPicker,
     RouterLink,
     Icon,
-    SignOut
+    SignOut,
+    ImageDrop
   ],
   selector: 'app-pollution-form',
   styleUrl: './pollution-form.scss',
@@ -48,10 +58,16 @@ export class PollutionForm {
   readonly isSubmitted = signal(false);
   readonly error = signal<string | null>(null);
   readonly loading = signal(false);
+
+  /** The pin is fixed while the report loads and once it is saved. */
+  readonly pinMode = computed(() =>
+    this.loading() || this.isSubmitted() ? PinMode.Fixed : PinMode.Movable,
+  );
   readonly saving = signal(false);
 
   readonly pollutionTypeList = POLLUTION_TYPES;
   readonly maxDangerLevel = MAX_DANGER_LEVEL;
+  readonly skeletonFields = Array.from({ length: SKELETON_FIELDS }, (_, field) => field);
 
   readonly form : FormGroup = new FormGroup({
     label: new FormControl("", [Validators.required]),
@@ -59,8 +75,15 @@ export class PollutionForm {
     description: new FormControl("", [Validators.required]),
     date: new FormControl("", [Validators.required, notInFuture]),
     place: new FormControl("", [Validators.required]),
-    latitude: new FormControl<number | null>(null, [Validators.required, Validators.min(-90), Validators.max(90)]),
-    longitude: new FormControl<number | null>(null, [Validators.required, Validators.min(-180), Validators.max(180)]),
+    // Updated on blur: a half-typed coordinate (e.g. "4" for 48.85) would send the map away
+    latitude: new FormControl<number | null>(null, {
+      validators: [Validators.required, Validators.min(-90), Validators.max(90)],
+      updateOn: 'blur',
+    }),
+    longitude: new FormControl<number | null>(null, {
+      validators: [Validators.required, Validators.min(-180), Validators.max(180)],
+      updateOn: 'blur',
+    }),
     image: new FormControl(""),
     dangerLevel: new FormControl<number | null>(null, [
       Validators.required,
@@ -68,6 +91,23 @@ export class PollutionForm {
       Validators.max(MAX_DANGER_LEVEL),
     ]),
   })
+
+  /** Position typed or picked on the map; null while incomplete or out of range. */
+  readonly position = toSignal(
+    this.form.valueChanges.pipe(map(() => this.typedPosition())),
+    { initialValue: null },
+  );
+
+  /** Column dropped on the map once the report is saved. */
+  readonly savedBeacon = computed(() => {
+    const position = this.position();
+    if (!this.isSubmitted() || position === null) {
+      return null;
+    }
+
+    const { type, dangerLevel } = this.form.getRawValue();
+    return toBeacon(position, type?.id, dangerLevel);
+  });
 
   constructor() {
     const param = this.route.snapshot.paramMap.get(ID_PARAM);
@@ -112,6 +152,24 @@ export class PollutionForm {
     if (this.route.snapshot.paramMap.has(ID_PARAM)) {
       this.router.navigateByUrl(LINKS.report);
     }
+  }
+
+  /** Fills latitude and longitude from the map, as if typed. */
+  pickLocation(position: GeoPosition | null) {
+    if (position === null) {
+      return;
+    }
+
+    this.form.patchValue(position);
+    for (const control of [this.form.controls['latitude'], this.form.controls['longitude']]) {
+      control.markAsDirty();
+      control.markAsTouched();
+    }
+  }
+
+  private typedPosition(): GeoPosition | null {
+    const { latitude, longitude } = this.form.getRawValue();
+    return toGeoPosition(latitude, longitude);
   }
 
   /** Loads an existing pollution into the form, matching its type to a radio option. */

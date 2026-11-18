@@ -1,0 +1,64 @@
+@use '../../styles/map-shell';
+
+@include map-shell.host;
+
+// Hidden until MapLibre moves it into the map
+:host > .pin {
+  display: none;
+}
+
+// Dot centered on the position, label bubble on its right
+.pin {
+  width: 24px;
+  height: 24px;
+  border: 4px solid var(--bg);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+  cursor: grab;
+}
+
+.pin-label {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 0.75rem);
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  max-width: 16rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.pin-place {
+  overflow: hidden;
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pin-coords {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--muted);
+}
+
+.notice {
+  @include map-shell.notice;
+
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--text-soft);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  pointer-events: none;
+}

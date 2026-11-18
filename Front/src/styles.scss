@@ -1,5 +1,6 @@
 @use 'styles/components';
 @use 'styles/forms';
+@use 'styles/map';
 
 // Palette « Nuit · Braise »
 :root {
@@ -70,3 +71,17 @@ body {
   border: 0;
 }
 
+
+// Passage d'une page à l'autre (View Transitions) : la carte de la liste se déplie en détail
+::view-transition-group(*) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}

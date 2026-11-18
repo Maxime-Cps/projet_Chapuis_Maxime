@@ -1,28 +1,29 @@
 <main class="page">
-  <app-map-backdrop />
+  <app-location-picker
+    class="map"
+    [position]="position()"
+    [place]="form.value.place"
+    [overlay]="panel"
+    [pinMode]="pinMode()"
+    [beacon]="savedBeacon()"
+    (positionChange)="pickLocation($event)"
+  />
 
-  <div class="marker" aria-hidden="true">
-    <span class="marker-dot"></span>
-    <span class="marker-label">
-      <span class="marker-place">{{ form.value.place || "Lieu de l'observation" }}</span>
-      <span class="marker-coords">
-        @if (form.value.latitude != null && form.value.longitude != null) {
-          {{ form.value.latitude }} · {{ form.value.longitude }}
-        } @else {
-          Coordonnées à saisir
-        }
-      </span>
-    </span>
-  </div>
-
-  <section class="panel">
+  <section #panel class="panel">
     <nav class="panel-links">
       <a class="back" [routerLink]="links.list"><app-icon name="arrow-left" />Tous les signalements</a>
       <app-sign-out />
     </nav>
 
     @if (loading()) {
-      <p id="form-loading" class="loading" role="status">Chargement du signalement…</p>
+      <p id="form-loading" class="visually-hidden" role="status">Chargement du signalement…</p>
+      <div class="skeleton-form" aria-hidden="true">
+        <span class="skeleton skeleton-title"></span>
+        @for (field of skeletonFields; track field) {
+          <span class="skeleton skeleton-label"></span>
+          <span class="skeleton skeleton-field"></span>
+        }
+      </div>
     } @else if (!isSubmitted()) {
       <header class="panel-head">
         @if (editing) {
@@ -130,25 +131,23 @@
           }
         </div>
 
-        <div class="row">
-          <div class="field">
-            <label for="pollutionDate">Observée le <span class="req" aria-hidden="true">*</span></label>
-            <input
-              id="pollutionDate"
-              formControlName="date"
-              aria-required="true"
-              type="datetime-local"
-              aria-describedby="date-hint"
-            />
-            @if (form.controls['date'].touched && form.controls['date'].errors?.['future']) {
-              <small id="date-hint" class="hint error" role="alert">La date ne peut pas être dans le futur.</small>
-            }
-          </div>
+        <div class="field">
+          <label for="pollutionDate">Observée le <span class="req" aria-hidden="true">*</span></label>
+          <input
+            id="pollutionDate"
+            formControlName="date"
+            aria-required="true"
+            type="datetime-local"
+            aria-describedby="date-hint"
+          />
+          @if (form.controls['date'].touched && form.controls['date'].errors?.['future']) {
+            <small id="date-hint" class="hint error" role="alert">La date ne peut pas être dans le futur.</small>
+          }
+        </div>
 
-          <div class="field">
-            <label for="pollutionImage">Image (facultatif)</label>
-            <input id="pollutionImage" formControlName="image" type="url" placeholder="https://" />
-          </div>
+        <div class="field image-field">
+          <span class="label" id="image-label">Image (facultatif)</span>
+          <app-image-drop formControlName="image" role="group" aria-labelledby="image-label" />
         </div>
 
         @if (error(); as error) {
